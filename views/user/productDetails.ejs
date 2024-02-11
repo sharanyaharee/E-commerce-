@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/header.ejs')%>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      font-weight: bolder;
+      background-color: #fefefe;
+      margin: auto;
+      margin-top: 10%;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      text-align: center;
+    }
+
+    .close {
+      color: #d42222;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: rgb(113, 13, 13);
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+  <body>
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="breadcrumb__links">
+              <a href="/"><i class="fa fa-home"></i> Home</a>
+              <a href="#">Women’s </a>
+              <span>Essential structured blazer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Product Details Section Begin -->
+    <% if (typeof errorMessage !== 'undefined') { %> <% if (addedToWishlist) {
+    %>
+
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeSuccessModal()">&times;</span>
+        <p id="successMessageModal" class="success-message">
+          <%= errorMessage %>
+        </p>
+      </div>
+    </div>
+    <% } %> <% } %>
+
+    <section class="product-details spad">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="product__details__pic">
+              <div
+                class="product__details__pic__left product__thumb nice-scroll"
+              >
+                <% productDetails.productImages.forEach(function(imageUrl,index)
+                { %><a
+                  class="pt <%= index === 0 ? 'active' : '' %>"
+                  href="#product-<%= index + 1 %>"
+                >
+                  <img src="/assets/uploads/<%= imageUrl %>" alt="" /> </a
+                ><% }); %>
+              </div>
+
+              <div class="product__details__slider__content">
+                <div class="product__details__pic__slider owl-carousel">
+                  <%
+                  productDetails.productImages.forEach(function(imageUrl,index)
+                  { %>
+                  <img
+                    data-hash="product-<%= index + 1 %>"
+                    class="product__big__img"
+                    src="/assets/uploads/<%= imageUrl %>"
+                    alt=""
+                  />
+                  <% }); %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="product__details__text">
+              <h3><%= productDetails.productName %></h3>
+
+              <div class="product__details__price">
+                Rs <%= productDetails.price %> <span>Rs 8333.0</span>
+              </div>
+              <p><%= productDetails.description %></p>
+              <div class="product__details__button">
+                <div>
+                  <ul>
+                    <% if (user) { %>
+                    <li>
+                      <% if (wishlist && Array.isArray(wishlist.products) &&
+                      wishlist.products.includes(productDetails._id)) { %>
+                    </li>
+
+                    <li>
+                      <a
+                        href="/addToWishlist/<%= productDetails._id %>?addedToWishlist=false"
+                        data-productid="<%= productDetails._id %>"
+                      >
+                        <span
+                          ><img
+                            style="max-width: 50%"
+                            src="/img/filled-like.png"
+                            alt="" /></span
+                      ></a>
+                    </li>
+                    <% } else { %>
+                    <li>
+                      <a
+                        href="/addToWishlist/<%= productDetails._id %>?addedToWishlist=true"
+                        data-productid="<%= productDetails._id %>"
+                      >
+                        <span
+                          ><img
+                            style="max-width: 50%"
+                            src="/img/unfilled-like.png"
+                            alt=""
+                        /></span>
+                      </a>
+                    </li>
+                    <% } %> <% if (cart && cart.item && Array.isArray(cart.item)
+                    && cart.item.map(item => item.product &&
+                    item.product.toString()).includes(productDetails._id.toString()))
+                    { %>
+                    <span class="cart__btn"
+                      ><a href="/cart">Go to Cart</a>
+                    </span>
+                    <% } else { %> <% if (productDetails.quantity > 0) { %>
+                    <li>
+                      <a href="/addToCart/<%= productDetails._id%>"
+                        ><span class="icon_bag_alt"></span
+                      ></a>
+                    </li>
+                    <% } else { %>
+                    <li>
+                      <span style="color: red; font-weight: bold"
+                        >Currently Unavailable</span
+                      >
+                    </li>
+
+                    <% } %> <% } %> <% } else { %>
+                    <li>
+                      <a
+                        href="/userLogin"
+                        data-productid="<%= productDetails._id %>"
+                      >
+                        <span
+                          ><img
+                            style="max-width: 50%"
+                            src="/img/unfilled-like.png"
+                            alt="" /></span
+                      ></a>
+                    </li>
+                    <li>
+                      <a href="/userLogin"
+                        ><span class="icon_bag_alt"></span
+                      ></a>
+                    </li>
+                    <% } %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="product__details__widget">
+              <ul>
+                <li>
+                  <span>Availability:</span>
+                  <ul>
+                    <% if (productDetails.quantity > 0) { %>
+                    <li><%= productDetails.quantity %> available</li>
+                    <% } else { %>
+                    <li>No Stock Available</li>
+                    <% } %>
+                  </ul>
+                </li>
+
+                <li>
+                  <div class="cart__btn">
+                    <a href="/shop">Continue Shopping</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <br />
+
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <div class="related__title">
+            <h5>RELATED PRODUCTS</h5>
+          </div>
+        </div>
+
+        <!-- Updated HTML structure for related products -->
+        <% if (relatedProducts) { %>
+        <div class="container">
+          <div class="row">
+            <% relatedProducts.forEach(function(relatedProduct) { %>
+            <div class="col-lg-3 col-md-4 mb-4">
+              <div class="product__item">
+                <div
+                  class="product__item__pic set-bg"
+                  data-setbg="/assets/uploads/<%= relatedProduct.productImages[0] %>"
+                >
+                  <div class="label new">New</div>
+                  <ul class="product__hover">
+                    <li >
+                      <a href="/product/<%= relatedProduct._id %>"
+                        ><span class="arrow_expand"></span
+                      ></a>
+                    </li>
+                   
+                    <li>
+                      <% if (wishlist && Array.isArray(wishlist.products) &&
+                      wishlist.products.includes(relatedProduct._id)) { %>
+                      <a
+                        href="/addToWishlist/<%= relatedProduct._id %>?addedToWishlist=false"
+                      >
+                        <span><img src="/img/filled-like.png" alt="" /></span>
+                      </a>
+                      <% } else { %>
+                      <a
+                        href="/addToWishlist/<%= relatedProduct._id %>?addedToWishlist=true"
+                      >
+                        <span><img src="/img/unfilled-like.png" alt="" /></span>
+                      </a>
+                      <% } %>
+                    </li>
+              
+                  
+                      <% if (cart && cart.item && Array.isArray(cart.item) &&
+                      cart.item.map(item => item.product &&
+                      item.product.toString()).includes(relatedProduct._id.toString()))
+                      { %>
+                        <span class="cart__btn"
+                      ><a href="/cart">Go to Cart</a>
+                    </span>
+                      <% } else { %> <% if (relatedProduct.quantity > 0) { %>
+                        <li class="text-center">
+                      <a href="/addToCart/<%= relatedProduct._id %>"
+                        ><span class="icon_bag_alt pb-2"></span
+                      ></a></li>
+                      <% } else { %>
+                      <span style="color: red; font-weight: bold"
+                        >Currently Unavailable</span
+                      >
+                      <% } %> <% } %>
+                    
+                  </ul>
+                </div>
+                <div class="product__item__text">
+                  <h6>
+                    <a href="/product/<%= relatedProduct._id %>"
+                      ><%= relatedProduct.productName %></a
+                    >
+                  </h6>
+                  <% if (relatedProduct.reducedPrice) { %>
+                  <div class="product__price redd">
+                    Rs. <%= relatedProduct.reducedPrice %>
+                    <span> Rs. <%= relatedProduct.price %></span>
+                  </div>
+                  <% } else if (relatedProduct.offerPrice) { %>
+                  <div class="product__price redd">
+                    Rs. <%= relatedProduct.offerPrice %><span>
+                      Rs. <%= relatedProduct.price %></span
+                    >
+                  </div>
+                  <% } else { %>
+                  <div class="product__price">
+                    Rs. <%= relatedProduct.price %>
+                  </div>
+                  <% } %>
+                  <div class="rating"></div>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+        </div>
+        <% } else { %>
+        <div>No Matched Products Found!!</div>
+        <% } %>
+      </div>
+    </section>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+      openSuccessModal();
+      function openSuccessModal() {
+        console.log("Opening success modal...");
+        const successModal = document.getElementById("successModal");
+        if (successModal) {
+          successModal.style.display = "block";
+          setTimeout(closeSuccessModal, 3000);
+        }
+      }
+
+      function closeSuccessModal() {
+        const successModal = document.getElementById("successModal");
+        if (successModal) {
+          successModal.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

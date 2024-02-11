@@ -1,0 +1,172 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Orders</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/adminDashboard"> Home</a></li>
+        <li class="breadcrumb-item active">All Orders</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+
+  <div id="statusModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeStatusModal()">&times;</span>
+      <p id="statusMessageModal" class="error-message"></p>
+    </div>
+  </div>
+
+  <section id="orderDetailsSection" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeOrderDetailsSection()">&times;</span>
+      <div id="orderDetailsContent"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- Table with stripped rows -->
+            <table class="table datatable">
+              <thead>
+                <tr style="color: rgb(20, 12, 128)">
+                  <th scope="col">OrderId</th>
+                  <th scope="col">User</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Order Amount</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let i = 0; i < orders.length; i++) { %> <% const order
+                =orders[i]; %> <% for (let j = 0; j < order.orderItems.length;
+                j++) { %>
+
+                <tr>
+                  <th scope="row">
+                    <b><%= order._id.toString().substr(0,5) %></b>
+                  </th>
+                  <th scope="row">
+                    <b><%= order.userId.name %></b>
+                  </th>
+                  <td>
+                    <span
+                      class="badge bg-danger"
+                      id="status<%= order.orderItems[j].product %>"
+                    >
+                      <%= order.orderItems[j].status %>
+                    </span>
+                  </td>
+                  <td>
+                    <b><%= order.orderItems[j].price %>(<%= order.orderItems[j].quantity %>)</b>
+                  </td>
+                  <td><%= order.orderDate.toLocaleDateString() %></td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <select
+                        id="orderStatus<%= order.orderItems[j].product %>"
+                        class="form-select m-1"
+                      >
+                        <option value="" disabled selected>
+                          Change Status
+                        </option>
+
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="admin_cancelled">Cancel</option>
+                        <option value="return_approved">Approve Request</option>
+                        <option value="return_rejected">Reject Request</option>
+                       
+                      </select>
+
+                      <button
+                        class="btn btn-warning btn-sm m-1"
+                        onclick="updateStatus('<%= order._id %>', '<%= order.orderItems[j].product %>', '<%= i %>', '<%= j %>')"
+                      >
+                        Update
+                      </button>
+
+                      <a
+                        href="/admin/getOrderDetails?orderId=<%= order._id %>&productId=<%= order.orderItems[j].product %>"
+                        class="btn btn-secondary btn-sm m-1"
+                      >
+                        Details
+                      </a>
+                    
+                    </div>
+                  </td>
+                </tr>
+                <% } %> <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  async function updateStatus(orderId, orderItemsId, i, j) {
+    var selectedStatus = document.getElementById(`orderStatus${orderItemsId}`).value;
+console.log("selllll",selectedStatus)
+console.log(orderId,orderId,i,j)
+    fetch("/admin/updateOrderStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId: orderId,
+        orderItemsId: orderItemsId,
+        newStatus: selectedStatus,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+         
+          const statusElement = document.getElementById(`status${orderItemsId}`);
+
+          if (statusElement) {
+            statusElement.innerText = data.updatedStatus;
+          }
+
+          const statusMessageModal =
+            document.getElementById("statusMessageModal");
+          if (statusMessageModal) {
+            statusMessageModal.innerText = "Status changed successfully.";
+            showModal();
+          }
+        } else {
+          console.error("Failed to update order status:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating order status:", error);
+      });
+  }
+
+  function showModal() {
+    const statusModal = document.getElementById("statusModal");
+    if (statusModal) {
+      statusModal.style.display = "block";
+      setTimeout(closeStatusModal, 3000);
+    }
+  }
+
+  function closeStatusModal() {
+    const statusModal = document.getElementById("statusModal");
+    if (statusModal) {
+      statusModal.style.display = "none";
+    }
+  }
+</script>
+
+<%- include('../adminLayout/footer.ejs') %>

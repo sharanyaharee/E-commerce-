@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/header.ejs')%>
+  <style>
+    .imgfit {
+      max-width: 100px; 
+      max-height: 100px; 
+      width: auto;
+      height: auto;
+    }
+ 
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  font-weight:bolder;
+  background-color: #fefefe;
+  margin: auto;
+  margin-top: 10%;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  text-align: center;
+}
+
+.close {
+  color: #d42222;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: rgb(113, 13, 13);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+  </style>
+  
+  <body>
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="breadcrumb__links">
+              <a href="/"><i class="fa fa-home"></i> Home</a>
+              <span>Shopping cart</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <!-- Shop Cart Section Begin -->
+ 
+<div id="errorModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeErrorModal()">&times;</span>
+    <p id="errorMessageModal" class="error-message"></p>
+  </div>
+</div>
+
+
+
+    <section class="shop-cart spad">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+          
+            
+            <div class="shop__cart__table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <% if( items.length > 0) { %>
+                  <% items.forEach((item, index) => { %>
+                    <tbody>
+                      <tr>
+                        <td class="cart__product__item">
+                          <a href="/product/<%= item.product._id %>">
+                            <img class="imgfit" src="/assets/uploads/<%= item.product.productImages[0] %>" alt="" />
+                          </a>
+                          <div class="cart__product__item__title">
+                            <a href="/product/<%= item.product._id  %>">
+                              <h6><%= item.product.productName %></h6>
+                            </a>
+                            <div class="rating">
+                              <i class="fa fa-star"></i>
+                              <i class="fa fa-star"></i>
+                              <i class="fa fa-star"></i>
+                              <i class="fa fa-star"></i>
+                              <i class="fa fa-star"></i>
+                            </div>
+                          </div>
+                        </td>
+                       
+                    <td class="cart__price">
+                      <% if (item.quantity > 0) { %>
+                        ₹<%= item.price %>
+                      <% } else { %>
+                        Item Currently Unavailable
+                      <% } %>
+                    </td>
+                        <td>
+                          <div class="product_count">
+                            <button class="quantity__minus btn" data-id="<%= item.product._id %>">-</button>
+                            <% if (item.quantity > 0) { %>
+                              <span class="quantity-value" id="quantity<%= item.product._id %>"><%= item.quantity %></span>
+                            <% } else { %>
+                           0
+                            <% } %>
+                            <button class="quantity__plus btn" data-id="<%= item.product._id %>">+</button>
+                          </div>
+                        </td>
+                       
+                         
+                    <td class="cart__total" id="totalAmount<%= item.product._id %>">
+                      <% if (item.quantity > 0) { %>
+                        ₹<%=(item.price*item.quantity).toFixed(2) %>
+                      <% } else { %>
+                     0
+                      <% } %>
+                    </td>
+                    
+                        <td class="cart__close">
+                          <button class="remove-item-btn" data-item-id="<%=item.product._id %>">
+                            <span class="icon_close"></span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td>
+                      Your Cart is Empty!!! Visit our shop page to Purchase product
+                    </td>
+                  </tr>
+                <% } %>
+              </table>
+              
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="cart__btn">
+              <a href="/shop">Continue Shopping</a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            
+          </div>
+          
+
+          <div class="col-lg-4 offset-lg-2">
+            <div class="cart__total__procced">
+              <h6>Cart total</h6>
+              <ul>
+                <li>
+                  Total
+                  <span id="totalCartAmount">₹<%=totalCartPrice %></span>
+                </li>
+              </ul>
+              <a href="/checkout?totalCartPrice=<%=totalCartPrice %>" class="primary-btn">Proceed to checkout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const removeItemButtons = document.querySelectorAll(".remove-item-btn");
+      removeItemButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const itemId = btn.dataset.itemId;
+          removeCartItem(itemId);
+        });
+      });
+
+      async function removeCartItem(itemId) {
+        try {
+          const response = await fetch("/removeCart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: itemId }),
+          });
+          if (response.ok) {
+            window.location.href = "/cart";
+          } else {
+            console.error("failed to remove item from cart.");
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const incrementButtons = document.querySelectorAll(".quantity__plus");
+        const decrementButtons = document.querySelectorAll(".quantity__minus");
+
+        incrementButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const id = this.getAttribute("data-id");
+            updateCartQuantity("increment", id);
+          });
+        });
+
+        decrementButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const id = this.getAttribute("data-id");
+            updateCartQuantity("decrement", id);
+          });
+        });
+      })
+        function updateCartQuantity(action, id) {
+  
+
+  fetch(`/${action}Cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        
+        const quantityElement = document.getElementById(`quantity${id}`);
+        const totalAmountElement = document.getElementById(`totalAmount${id}`);
+        const totalCartAmountElement = document.getElementById(`totalCartAmount`);
+
+        if (quantityElement) {
+          quantityElement.innerText = data.quantity;
+        }
+        if (totalAmountElement) {
+          totalAmountElement.innerText = `₹${data.totalPrice}`;
+        }
+        if (totalCartAmountElement) {
+          totalCartAmountElement.innerText = `₹${data.totalCartAmount}`;
+      
+        }
+      } else {
+        const errorMessageModal = document.getElementById("errorMessageModal");
+      if (errorMessageModal) {
+        errorMessageModal.innerText = data.message;
+        openErrorModal();
+      }
+
+      function openErrorModal() {
+    const errorModal = document.getElementById("errorModal");
+    if (errorModal) {
+      errorModal.style.display = "block";
+      setTimeout(closeErrorModal, 3000);
+    }
+  }
+
+  function closeErrorModal() {
+    const errorModal = document.getElementById("errorModal");
+    if (errorModal) {
+      errorModal.style.display = "none";
+    }
+  }
+
+  
+      }
+    })
+    .catch((error) => {
+      console.error("Error updating quantity:", error);
+
+      if (errorMessageElement) {
+        errorMessageElement.innerText = "An error occurred while updating quantity.";
+
+        setTimeout(() => {
+          errorMessageElement.innerText = "";
+        }, 3000);
+      }
+    });
+}
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const proceedToCheckoutButton = document.querySelector('.primary-btn');
+    proceedToCheckoutButton.addEventListener("click", function (event) {
+      const totalCartAmount = document.getElementById('totalCartAmount').innerText;
+      if (totalCartAmount === "₹0") {
+        event.preventDefault(); // Prevent the default action (submitting the form)
+        Swal.fire({
+          icon: 'warning',
+          title: 'Your Cart is Empty',
+          text: 'Please add items to your cart before proceeding to checkout.',
+        });
+      }
+    });
+  });
+
+
+
+    </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <%-include('../partials/footer.ejs') %>
+  </body>
+</html>

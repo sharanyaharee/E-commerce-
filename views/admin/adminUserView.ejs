@@ -1,0 +1,64 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>All Customers</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/admindashboard">Home</a></li>
+        <li class="breadcrumb-item active">Customers</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+
+<div class="col-lg-12">
+  <section class="mt-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table datatable">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Joined On</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (users && users.length > 0) { %>
+                <% users.forEach(user => { %>
+                  <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.username %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.mobile %></td>
+                    <td><%= user.createdAt.toLocaleDateString() %></td>
+                    <td>  
+                    <% if (user.blocked) { %>
+                        <a href="/admin/blockUser?id=<%= user._id%>" class="btn btn-warning">Un Block</a>
+                <% }else{ %>
+                  <a href="/admin/blockUser?id=<%= user._id%>" class="btn btn-outline-danger">Block</a>
+                  <%}%>
+                </td> 
+                  </tr>
+                <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6">No users found.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+</div>
+</div>
+</div>
+        
+</section>
+</div>
+</main>
+
+<%- include('../adminLayout/footer.ejs') %>

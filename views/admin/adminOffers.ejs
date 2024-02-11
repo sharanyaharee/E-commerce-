@@ -1,0 +1,202 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Products</h1>
+
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/admin/adminDashboard">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Offer Management</li>
+      </ol>
+    </nav>
+
+  </div>
+  <div>
+    <div class="d-flex justify-content-center flex-column align-items-center">
+      <H3 class="font-weight-bold mb-3">Modify Or Create A Product Offer</H3>
+
+      <div class="mb-4">
+        <input
+          type="text"
+          id="productID"
+          placeholder="PRODUCT ID"
+          class="mr-3 text-center"
+        />
+        <input
+          type="number"
+          id="rateOfDiscount"
+          placeholder="RATE OF DISCOUNT"
+          class="ml-3 text-center"
+        />
+      </div>
+      <div id="errorContainer" class="text-danger"></div>
+
+      <div class="mb-5">
+        <button
+          id="btnForSubmit"
+          class="px-2"
+          style="background-color: black; color: white; border: none"
+        >
+          Make An Offer
+        </button>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table datatable offertable table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Discount%</th>
+                    <th scope="col"> Offer Price</th>
+                    <th scope="col"> Discount</th>
+                    <th scope="col"> Action</th>
+                    
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                    <% products.forEach(product => { %>
+                      <tr  data-product-row="<%= product._id %>">
+                        <td><%= product.productName %></td>
+                        <td>
+                          <% if (product.productImages.length > 0) { %>
+                            <img class="m-3" src="/assets/uploads/<%= product.productImages[0] %>" alt="Product Image" height="50" />
+                          <% } %>
+                        </td>
+                        <td><%= product.price %></td>
+                        <td><%= product.quantity %></td>
+                        <td><%= product.rateOfDiscount %></td>
+                        <td><%= product.offerPrice %></td>
+                        <td><%= (product.price - product.offerPrice) %></td>
+                        <td>
+                          <button class="btn btn-sm btn-warning deactivateOfferBtn" data-product-id="<%= product._id %>">Deactivate</button>
+                        </td>
+                        
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                  
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<script>
+  document.getElementById('btnForSubmit').addEventListener('click', async () => {
+    const productIdInput = document.getElementById('productID');
+    const rateOfDiscountInput = document.getElementById('rateOfDiscount');
+    const productId = productIdInput.value;
+    const rateOfDiscount = rateOfDiscountInput.value.trim();
+
+    const formDataJSON = { rateOfDiscount };
+
+    try {
+      const response = await fetch(`/admin/addOffer/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formDataJSON),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Offer added successfully!',
+        });
+        productIdInput.value = '';
+        rateOfDiscountInput.value = '';
+        location.reload();
+      } else {
+        const { message } = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: message || 'Failed to add offer. Please try again.',
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Add inputs and try again.',
+      });
+    }
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.deactivateOfferBtn').forEach(button => {
+  button.addEventListener('click', async (event) => {
+    const productId = event.target.dataset.productId;
+const productRow = event.target.closest('tr');
+
+if (productRow) {
+   
+    productRow.remove();
+
+}
+
+    try {
+      const response = await fetch(`/admin/deactivateOffer/${productId}`, {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Offer deactivated successfully!',
+        }); 
+        
+
+    
+      } else {
+        const { message } = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: message || 'Failed to deactivate offer. Please try again.',
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to deactivate offer. Please try again.',
+      });
+    }
+  });
+});
+});
+
+
+  
+
+</script>
+
+
+
+<%- include('../adminLayout/footer.ejs') %>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+       
+        select {
+            padding:7px;
+            width: 100%;
+        }
+    </style>
+    <%- include('../partials/header.ejs') %>
+<body>
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Add Address</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+    <div class="container">
+        <form name="addressForm" action="/addAddress?returnUrl=<%= returnUrl %>" method="post" class="checkout__form" onsubmit="return validateForm(event)">
+            <div class="row">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8 align-items-center">
+                    <h5>Add new address</h5>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="checkout__form__input">
+                                <p>Name <span>*</span></p>
+                                <input name="name" type="text"  placeholder="name" required  oninput="validateName(this, 'nameError')" >
+                                <span class="text-danger " id="nameError"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="checkout__form__input">
+                                <p>Address <span>*</span></p>
+                                <input type="text" name="addressLine" placeholder="Street Address" required oninput="validateAddress(this,'addressError')">
+                                <span class="text-danger " id="addressError"></span>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Town/City <span>*</span></p>
+                                <input type="text" name="city"  placeholder="City Name" required  oninput="validateCity(this, 'cityError')">
+                                <span class="text-danger " id="cityError"></span>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Postcode/Zip <span>*</span></p>
+                                <input type="number" name="postCode"  placeholder="eg.234 567" required oninput="validatePostCode(this, 'postCodeError')">
+                                <span class="text-danger" id="postCodeError" ></span>
+                            </div>
+                            <div class="checkout__form__input">
+                                  <div class="checkout__form__input">
+                                <p>District <span>*</span></p>
+                                <select name="district" required>
+                                    <option value="">Select District</option>
+                                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                                    <option value="Kollam">Kollam</option>
+                                    <option value="Pathanamthitta">Pathanamthitta</option>
+                                    <option value="Alappuzha">Alappuzha</option>
+                                    <option value="Kottayam">Kottayam</option>
+                                    <option value="Idukki">Idukki</option>
+                                    <option value="Ernakulam">Ernakulam</option>
+                                    <option value="Thrissur">Thrissur</option>
+                                    <option value="Palakkad">Palakkad</option>
+                                    <option value="Malappuram">Malappuram</option>
+                                    <option value="Kozhikode">Kozhikode</option>
+                                    <option value="Wayanad">Wayanad</option>
+                                    <option value="Kannur">Kannur</option>
+                                    <option value="Kasaragod">Kasaragod</option>
+                                </select>
+                            </div>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>State <span>*</span></p>
+                                <input name="state" type="text" readonly value="Kerala">
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Country <span>*</span></p>
+                                <input name="country" type="text" readonly value="India">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="site-btn">Submit</button>
+                    
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+    function validateName(input, errorElement) {
+        const error = document.getElementById(errorElement);
+        if (!/\S/.test(input.value.trim())) {
+            error.innerHTML = "* Name is required";
+        } else {
+            error.innerHTML = "";
+        }
+    }
+
+    function validateCity(input, errorElement) {
+        const error = document.getElementById(errorElement);
+        if (!/\S/.test(input.value.trim())) {
+            error.innerHTML = "* City is required";
+        } else {
+            error.innerHTML = "";
+        }
+    }
+
+    function validatePostCode(input, postCodeError) {
+        const error = document.getElementById(postCodeError);
+        const postCodePattern = /^\d{6}$/;
+        if (!postCodePattern.test(input.value)) {
+            error.innerHTML = "* Postcode/Zip must be a 6-digit number";
+        } else {
+            error.innerHTML = "";
+        }
+    }
+
+    function validateAddress(input, addressError) {
+        const error = document.getElementById(addressError);
+        if (!/\S/.test(input.value.trim())) {
+            error.innerHTML = "* Address is required";
+        } else {
+            error.innerHTML = "";
+        }
+    }
+ 
+    function validateForm(event) {
+  
+    const nameError = document.getElementById("nameError").innerHTML;
+    const cityError = document.getElementById("cityError").innerHTML;
+    const postCodeError = document.getElementById("postCodeError").innerHTML;
+    const addressError = document.getElementById("addressError").innerHTML;
+
+    if (nameError || cityError || postCodeError || addressError) {
+        event.preventDefault();
+        return false;
+    }
+
+    return productNameError === "";
+  }
+
+</script>
+<%- include('../partials/footer.ejs') %>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<html>
+  <%- include('../partials/header.ejs')%>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.15.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .he {
+        padding: 20px 0 35px 0;
+      }
+
+      .error-message {
+        color: brown;
+      }
+
+      #intro {
+        background-image: url("/img/image1.avif");
+        height: 100vh;
+      }
+
+      /* Height for devices larger than 576px */
+      @media (min-width: 992px) {
+        #intro {
+          margin-top: -58.59px;
+        }
+      }
+
+      .form-outline {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-outline input.form-control {
+        padding-top: 1.5rem; 
+        padding-bottom: 1.5rem;
+        line-height: 1.5; 
+      }
+
+      .form-outline label.form-label {
+        position: absolute;
+        top: 0.2rem; 
+        left: 0;
+        transition: all 0.3s;
+        pointer-events: none;
+        color: #495057;
+      }
+       .form-outline input.form-control:focus + label.form-label,
+      .form-outline
+        input.form-control:not(:placeholder-shown)
+        + label.form-label {
+        top: -1rem;
+        font-size: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Background image -->
+      <div id="intro" class="bg-image shadow-2-strong">
+        <div
+          class="mask d-flex align-items-center h-100"
+          style="background-color: rgba(0, 0, 0, 0.8)"
+        >
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="col-xl-5 col-md-8">
+                <form
+                  action="/userSignup"
+                  method="POST"
+                  class="bg-white rounded-5 shadow-5-strong px-5 py-3"
+                >
+                  <h4 class="text-center">Sign Up</h4>
+
+                  <% if (message) { %>
+                  <p style="color: brown"><%= message %></p>
+                  <% } %>
+
+                  <div class="form-outline flex-fill mb-4">
+                    <input
+                      type="text"
+                      id="name"
+                      class="form-control"
+                      name="name"
+                      required
+                    />
+                    <label class="form-label" for="name">Your Name</label>
+                    <span id="name-error" style="color: red"></span>
+                  </div>
+
+                  <div class="form-outline flex-fill mb-4">
+                    <input
+                      type="text"
+                      id="username"
+                      class="form-control"
+                      name="username"
+                      required
+                    />
+                    <label class="form-label" for="username"
+                      >Choose a userName</label
+                    >
+                    <span id="username-error" style="color: red"></span>
+                  </div>
+
+                  <div class="form-outline flex-fill mb-4">
+                    <input
+                      type="email"
+                      id="email"
+                      class="form-control"
+                      name="email"
+                      required
+                    />
+                    <label class="form-label" for="email">Your Email</label>
+                    <span id="email-error" style="color: red"></span>
+                  </div>
+
+                  <div class="form-outline flex-fill mb-4">
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      name="password"
+                      required
+                    />
+                    <label class="form-label" for="password">Password</label>
+                    <span id="password-error" style="color: red"></span>
+                  </div>
+
+                  <div class="form-outline flex-fill mb-4">
+                    <input
+                      type="password"
+                      id="confirmPassword"
+                      class="form-control"
+                      name="confirmPassword"
+                      required
+                    />
+                    <label class="form-label" for="confirmPassword"
+                      >Confirm password</label
+                    >
+                    <span id="confirmPassword-error" style="color: red"></span>
+                  </div>
+
+                  <div class="form-outline flex-fill mb-2">
+                    <input
+                      type="tel"
+                      id="mobile"
+                      class="form-control"
+                      name="mobile"
+                      required
+                    />
+                    <label class="form-label" for="mobile">Mobile Number</label>
+                    <span id="mobile-error" style="color: red"></span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="btn btn-warning btn-block mb-2"
+                    id="registerButton"
+                  >
+                    Sign Up
+                  </button>
+                  <p class="text-muted">
+                    Already a user?
+                    <a href="/userLogin" class="fw-bold text-body"> Log In </a>
+                  </p>
+                  <p class="text-muted mt-0">
+                    Are you an Admin?
+                    <a href="/admin/adminLogin" class="fw-bold text-body"
+                      >Admin Login</a
+                    >
+                  </p>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <script>
+      const form = document.querySelector("form");
+
+      const name = document.getElementById("name");
+      const username = document.getElementById("username");
+      const email = document.getElementById("email");
+      const mobile = document.getElementById("mobile");
+      const password = document.getElementById("password");
+      const confirmPassword = document.getElementById("confirmPassword");
+
+      const nameError = document.getElementById("name-error");
+      const usernameError = document.getElementById("username-error");
+      const emailError = document.getElementById("email-error");
+      const mobileError = document.getElementById("mobile-error");
+      const passwordError = document.getElementById("password-error");
+      const confirmPasswordError = document.getElementById(
+        "confirmPassword-error"
+      );
+
+      const namePattern = /^[A-Za-z][a-z]+(\s[A-Za-z][a-z]{0,25}){0,3}$/;
+      const usernamePattern = /^[A-Za-z][a-z]+(\s[A-Za-z][a-z]{0,25}){0,3}$/;
+      const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+      const mobilePattern = /^\d{10}$/;
+      const passwordPattern =
+        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      const validateField = (field, pattern, errorElement, errorMessage) => {
+        if (!pattern.test(field.value)) {
+          errorElement.textContent = errorMessage;
+          return false;
+        } else {
+          errorElement.textContent = "";
+          return true;
+        }
+      };
+
+      const validateForm = () => {
+        const validations = [
+          () => validateField(name, namePattern, nameError, "Invalid name"),
+          () => validateField(username, usernamePattern, usernameError, "Invalid username"),,
+          () => validateField(email, emailPattern, emailError, "Invalid email"),
+          () =>
+            validateField(
+              mobile,
+              mobilePattern,
+              mobileError,
+              "Invalid phone number"
+            ),
+          () =>
+            validateField(
+              password,
+              passwordPattern,
+              passwordError,
+              "Must contain at least a number, a symbol, an alphabet, and a minimum of 8 characters"
+            ),
+          () => {
+            if (confirmPassword.value !== password.value) {
+              confirmPasswordError.textContent = "Passwords do not match";
+              return false;
+            } else {
+              confirmPasswordError.textContent = "";
+              return true;
+            }
+          },
+        ];
+
+        return validations.every((fn) => fn());
+      };
+
+      const addValidationEvents = (
+        field,
+        pattern,
+        errorElement,
+        errorMessage
+      ) => {
+        field.addEventListener("blur", () => {
+          validateField(field, pattern, errorElement, errorMessage);
+        });
+
+        field.addEventListener("input", () => {
+          errorElement.textContent = "";
+        });
+      };
+
+      addValidationEvents(name, namePattern, nameError, "Invalid name");
+      
+      addValidationEvents(username, usernamePattern, usernameError, "Invalid username");
+      addValidationEvents(email, emailPattern, emailError, "Invalid email");
+      addValidationEvents(
+        mobile,
+        mobilePattern,
+        mobileError,
+        "Invalid phone number"
+      );
+      addValidationEvents(
+        password,
+        passwordPattern,
+        passwordError,
+        "Must contain at least a number, a symbol, an alphabet, and a minimum of 8 characters"
+      );
+
+      confirmPassword.addEventListener("blur", () => {
+        validateField(
+          confirmPassword,
+          passwordPattern,
+          confirmPasswordError,
+          "Passwords do not match"
+        );
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (validateForm()) {
+          form.submit();
+        } 
+      });
+    </script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <%- include('../partials/footer.ejs')%>
+  </body>
+</html>

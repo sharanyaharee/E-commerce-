@@ -1,0 +1,315 @@
+<html>
+  <%- include('../partials/header.ejs') %>
+
+  <!-- Breadcrumb Begin -->
+  <div class="breadcrumb-option">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="breadcrumb__links">
+            <a href="/"><i class="fa fa-home"></i> Home</a>
+            <span>Order Details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Breadcrumb End -->
+
+  <section class="shop-cart spad" style="padding-bottom: 0px">
+    <h4 style="text-align: center; font-weight: bolder">Order Details</h4>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+         
+            <h4 class="coupon__link"></h4>
+    
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-lg-12 checkout__order">
+          <div class="shop__cart__table">
+            
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Price Paid</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (selectedProduct) { %>
+                <tr>
+                  <th>
+                    <span> <%= selectedProduct.product.productName%> </span>
+                  </th>
+
+                  <th><span>x <%=selectedProduct.quantity%></span></th>
+                  <th><span>₹ <%=selectedProduct.price%></span></th>
+                  <th>
+                    <span
+                      >₹
+                      <%=selectedProduct.price*selectedProduct.quantity%></span
+                    >
+                  </th>
+                </tr>
+                <% } %>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th class="text-right" colspan="4">
+                    <% if(selectedProduct.status === "processing") { %>
+                      <a href="#" id="can" onclick="confirmCancelOrder('<%= id %>', '<%= productId %>')"
+                        class="btn btn-warning m-2">Cancel</a>
+                    <% } else if(selectedProduct.status=== "shipped") { %>
+                                       
+                    <a href="#" id="can" onclick="confirmCancelOrder('<%= id %>', '<%= productId %>')"
+                      class="btn btn-warning m-2">Cancel</a>
+                    <% } else if(selectedProduct.status === "delivered"){ %>
+                   
+
+                    <button
+                      onclick="downloadInvoice()"
+                      id="invoice"
+                      class="btn btn-success"
+                      style="color: white"
+                    >
+                      Download Invoice
+                    </button>
+
+                    <% } else if(selectedProduct.status === "user_cancelled"){
+                    %>
+                    <span id="orderStatus" style="color: green"> Order Cancelled by user</span>
+                    <% } else if(selectedProduct.status === "admin_cancelled"){
+                    %>
+                    <span style="color: green">
+                      Order Cancelled by Admin
+                      <span
+                        ><p><a href="">To know more.. </a></p></span
+                      ></span
+                    >
+                    <% } %>
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+            <% if (otherProducts && otherProducts.length > 0) { %>
+            <h4 class="p-3" style="color: rgb(6, 131, 16); text-align: center">
+              Other Items Bought Along With This Product
+            </h4>
+
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Price Paid</th>
+                  <th>Total Price Paid</th>
+                </tr>
+              </thead>
+              <tbody>
+            <% for
+                (let i = 0; i < otherProducts.length; i++) { %>
+                <tr>
+                  <th><%= otherProducts[i].product.productName %></th>
+                  <th>x<%= otherProducts[i].quantity %></th>
+                  <th>x<%= otherProducts[i].price %></th>
+                  <th>
+                    ₹<%= otherProducts[i].quantity * otherProducts[i].price %>
+                  </th>
+                </tr>
+
+                <% } %> 
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th class="text-right" colspan="5">
+                    ₹<%=orders.totalAmount%>
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+            <% } %> 
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="checkout spad">
+    <div class="container">
+      <form action="#" class="checkout__form">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="row">
+              <div class="col-lg-6">
+                <!-- Order info -->
+                <div class="checkout__order">
+                  <h5>Order info</h5>
+                  <div class="checkout__order__product">
+                    <input type="hidden" id="ordersData" value="<%= JSON.stringify(orders) %>">
+
+                    <ul>
+                      <!-- Order info details -->
+                      <li>
+                        Order Number
+                        <span><%=orders._id.toString().substr(0, 5) %></span>
+                      </li>
+                      <li>
+                        Order Placed on
+                        <span><%=orders.orderDate.toDateString()%></span>
+                      </li>
+                       
+                      <li>Total <span>₹ <%=orders.totalAmount%></span></li>
+                      <li>
+                        Payment Method<span> <%=orders.paymentMethod %></span>
+                      </li>
+                      <li>
+                        <% const currentDate = new Date(); %> <% const
+                        expectedDeliveryDate = new Date(currentDate.getTime() +
+                        5 * 24 * 60 * 60 * 1000); %>
+                      </li>
+
+                      <li>
+                        Expected Delivery on<span>
+                          <%= expectedDeliveryDate.toDateString() %></span
+                        >
+                      </li>
+
+                  <% if(selectedProduct.statusDate) { %>
+                      <li>
+                        <%= selectedProduct.status %> on <span><%= selectedProduct.statusDate.toDateString() %></span>
+                      </li>
+                    <% } else { %>
+                      <li>
+                        Order Status  <span><%= selectedProduct.status %></span>
+                      </li>
+                    <% } %>
+
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <!-- Shipping Address -->
+                <div class="checkout__order">
+                  <h5>Shipping Address</h5>
+                  <div class="checkout__order__product">
+                    <ul>
+                      <li>
+                        Customer<span
+                          ><%= orders.shippingInfo.address.name %></span
+                        >
+                      </li>
+                      <li>
+                        Street<span
+                          ><%= orders.shippingInfo.address.addressLine %></span
+                        >
+                      </li>
+                      <li>
+                        City<span><%= orders.shippingInfo.address.city %></span>
+                      </li>
+
+                      <li>
+                        PinCode<span
+                          ><%= orders.shippingInfo.address.postCode %></span
+                        >
+                      </li>
+                      <li>
+                        District
+                        <span><%= orders.shippingInfo.address.district %></span>
+                      </li>
+                      <li>
+                        State<span
+                          ><%= orders.shippingInfo.address.state %></span
+                        >
+                      </li>
+                      <li>
+                        Country<span
+                          ><%= orders.shippingInfo.address.country %></span
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+  <script>
+function downloadInvoice() {
+   
+    var ordersDataElement = document.getElementById('ordersData');
+    if (!ordersDataElement) {
+        console.error("Orders data not found.");
+        return;
+    }
+
+    var ordersData = ordersDataElement.value;
+    var orders = JSON.parse(ordersData);
+
+    var productList = orders.orderItems.map(function(item) {
+        return {
+            "quantity": item.quantity,
+            "description": item.product.productName,
+            "tax-rate": 9, 
+            "price": item.price
+        };
+    });
+
+    var data = {
+        "customize": {
+            //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
+        },
+        "images": {
+            "logo": "https://public.budgetinvoice.com/img/logo_en_original.png",
+            "background": "https://public.budgetinvoice.com/img/watermark-draft.jpg"
+        },
+        "sender": {
+            "company": "Style Sync Corp.",
+            "address": "Street 123",
+            "zip": "1234 AB",
+            "city": "Kerala",
+            "country": "India"
+        },
+        "client": {
+            "company": orders.shippingInfo.address.name,
+            "address": orders.shippingInfo.address.addressLine,
+            "zip": orders.shippingInfo.address.postCode,
+            "city": orders.shippingInfo.address.city,
+            "district": orders.shippingInfo.address.district,
+            "state": orders.shippingInfo.address.state,
+            "country": orders.shippingInfo.address.country
+        },
+        "information": {
+            "number": orders._id.toString().substr(0, 5),
+            "date": new Date(orders.orderDate).toDateString(),
+            "due-date": "31-12-2021"
+        },
+        "products": productList,
+        "bottom-notice": "Kindly pay your invoice within 15 days.",
+        "settings": {
+            "currency": "INR"
+        }
+    };
+
+   
+    easyinvoice.createInvoice(data, function(result) {
+        console.log(result.pdf);
+        easyinvoice.download("invoice.pdf");
+    });
+}
+
+
+
+</script>
+
+  <%- include('../partials/footer.ejs') %>
+</html>

@@ -1,0 +1,193 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Categories</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/admin/adminDashboard">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Add offers to Category</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-responsive table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">category Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Discount(rs)</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (categories.length > 0) { %> <%
+                  categories.forEach(category => { %>
+                  <tr>
+                    <td><%= category._id %></td>
+                    <td><%= category.name%></td>
+                    <td>
+                      <img
+                        src="<%= category.image  %>"
+                        alt="<%= category.name %>"
+                        height="50"
+                      />
+                    </td>
+
+                    <td id="disc_<%= category._id %>">
+                      <%= category.discountAmount %>
+                    </td>
+
+                    <td></td>
+                    <td>
+                      <% if (category.onDiscount) { %>
+                      <button
+                        class="deactivate"
+                        data="<%= category._id %>"
+                        onclick="toggleDiscountStatus('<%= category._id %>', '<%= category.name %>', '<%= category.discountAmount %>', false)"
+                      >
+                        Deactivate
+                      </button>
+
+                      <% } else { %>
+                      <button
+                        class="activate"
+                        data="<%= category._id %>"
+                        onclick="toggleDiscountStatus('<%= category._id %>', '<%= category.name %>', 0, true)"
+                      >
+                        Activate
+                      </button>
+
+                      <% } %>
+                    </td>
+                  </tr>
+                  <% }) %> <% } else { %>
+                  <tr>
+                    <td colspan="3">No categories available.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  function toggleDiscountStatus(categoryId, categoryName, discountAmount, isActivate) {
+    if (isActivate) {
+      Swal.fire({
+        icon: "info",
+        title: "Enter Discount Amount",
+        input: "number",
+        inputAttributes: {
+          autocapitalize: "off",
+          placeholder: "Enter discount amount",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Submit",
+        showLoaderOnConfirm: true,
+        preConfirm: (amount) => {
+          if (!amount || amount <= 0) {
+            Swal.showValidationMessage("Discount amount must be greater than 0");
+          } else {
+            return fetch(`/admin/toggleDiscount`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                categoryId: categoryId,
+                categoryName: categoryName,
+                discountAmount: amount,
+                activate: isActivate,
+              }),
+            })
+            .then((response) => {
+              if (response.ok) {
+                const button = document.querySelector(`.activate[data="${categoryId}"]`);
+                button.textContent = "Deactivate";
+                button.setAttribute("onclick", `toggleDiscountStatus('${categoryId}', '${categoryName}', '${amount}', false)`); 
+                const discountElement = document.getElementById(`disc_${categoryId}`);
+                discountElement.innerHTML = amount;
+
+                Swal.fire({
+                  icon: "success",
+                  title: "Success!",
+                  text: `Discount for ${categoryName} has been activated.`,
+                  timer: 3000,
+                  showConfirmButton: false,
+                });
+              } else {
+                throw new Error("Failed to activate discount");
+              }
+            })
+            .catch((error) => {
+              console.error("Error toggling discount:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to activate discount",
+              });
+            });
+          }
+        },
+      });
+    } else {
+      fetch(`/admin/toggleDiscount`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryId: categoryId,
+          categoryName: categoryName,
+          discountAmount: 0,
+          activate: isActivate,
+        }),
+      })
+      .then((response) => {
+        if (response.ok) {
+          const button = document.querySelector(`.activate[data="${categoryId}"]`);
+          button.textContent = "Activate";
+          button.setAttribute("onclick", `toggleDiscountStatus('${categoryId}', '${categoryName}', 0, true)`); 
+          const discountElement = document.getElementById(`disc_${categoryId}`);
+          discountElement.innerHTML = 0;
+
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: `Discount for ${categoryName} has been deactivated.`,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+        } else {
+          throw new Error("Failed to deactivate discount");
+        }
+      })
+      .catch((error) => {
+        console.error("Error toggling discount:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to deactivate discount",
+        });
+      });
+    }
+  }
+</script>
+
+<%- include('../adminLayout/footer.ejs') %>

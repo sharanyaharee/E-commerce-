@@ -1,0 +1,84 @@
+<%- include('../adminLayout/header.ejs') %>
+
+ 
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Coupons</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin/adminDashboard">Dashboard</a></li>
+          <li class="breadcrumb-item active">Coupon list</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="container d-flex justify-content-end mb-4">
+      <a href="/admin/addCoupon" class="btn btn-warning">Add New Coupon</a>
+    </div>
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+           <div class="card-body">
+            <div class="table-responsive">
+             <table class="table datatable table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">maxDiscount</th>
+                    <th scope="col">minAmount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+            
+           <tbody>
+            <% if (couponData.length > 0) { %>
+                <% for (let i = 0; i < couponData.length; i++) { %>
+                    <tr>
+                        <th scope="row"><%= i + 1 %></th>
+                        <td><%= couponData[i].couponName %></td>
+                        <td><%= couponData[i].couponCode %></td>
+                        <td><%= couponData[i].startDate.toLocaleDateString() %></td>
+                        <td><%= couponData[i].endDate.toLocaleDateString()%></td>
+                        <td><%= couponData[i].maxDiscount %></td>
+                        <td><%= couponData[i].minAmount %></td>
+                        <%if(couponData[i].status === 1){%>
+                            <td>active</td>
+
+                       <% }else{%>
+                        <td>Inactive</td> 
+                     <%  } %>
+                        <td>
+                         
+                        <a href="/admin/deleteCoupon/<%= couponData[i]._id %>" style="margin-bottom: 2px;" class="btn btn-secondary btn-sm">Delete</a>
+                        <a href="/admin/editCoupon/<%= couponData[i]._id  %>" class="btn btn-sm btn-warning">Edit</a>
+                       
+                      </td>
+                    </tr>
+                <% } %>
+            <% }else{%>
+
+              <tr>
+                <td>No more coupons added</td>
+             </tr>
+
+         <% } %>
+        </tbody>
+        
+             </table>
+            </div>
+           </div>
+         </div>
+        </div>
+      </div>
+    </section>
+
+
+</main>
+
+
+<%- include('../adminLayout/footer.ejs') %>

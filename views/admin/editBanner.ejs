@@ -1,0 +1,102 @@
+<%- include('../adminLayout/header.ejs')%>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>New Banner</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Banner</li>
+        <li class="breadcrumb-item active">Add Banner</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">A new banner</h5>
+
+            <!-- Floating Labels Form -->
+            <form
+              class="row g-3"
+              method="post"
+              action="/admin/editBanner"
+              enctype="multipart/form-data"
+            >
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    name="mainheading"
+                    type="text"
+                    class="form-control"
+                    id="floatingEmail"
+                    value="<%=bannerData.mainHeading %>"
+                    placeholder="main heading"
+                    required
+                  />
+                  <label for="floatingEmail">Main Heading</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    name="subheading"
+                    type="text"
+                    class="form-control"
+                    value="<%= bannerData.subHeading %>"
+                    id="floatingPassword"
+                    placeholder="sub heading"
+                    required
+                  />
+                  <label for="floatingPassword">Sub Heading</label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating">
+                  <input
+                    name="description"
+                    class="form-control"
+                    placeholder="description"
+                    value="<%= bannerData.description %>"
+                    id="floatingTextarea"
+                    style="height: 90px"
+                  />
+                  <label for="floatingTextarea">Description</label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating">
+                  <img
+                    class="img-fluid"
+                    src="<%= bannerData.bannerImage %>"
+                    alt="Existing Banner Image"
+                  />
+                  <input
+                    accept="image/*"
+                    class="form-control"
+                    name="editBannerImage"
+                    type="file"
+                    value="<%=bannerData.bannerImage %>"
+                  />
+                  <label for="floatingTextarea">Banner image</label>
+                </div>
+              </div>
+
+              <input type="hidden" name="id" value="<%= bannerData._id %>" />
+              <div class="text-center">
+                <button type="submit" class="btn btn-warning">Submit</button>
+                <a href="/admin/adminBannerView" class="btn btn-secondary">Cancel</button></a>
+              </div>
+            </form>
+            <!-- End floating Labels Form -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<!-- End #main -->
+<%- include('../adminLayout/footer.ejs')%>

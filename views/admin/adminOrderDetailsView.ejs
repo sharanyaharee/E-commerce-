@@ -1,0 +1,153 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <!-- Confirmation Part Start -->
+  <section class="confirmation_part padding_top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+
+        </div>
+        <!-- Display Order Info -->
+        <div class="col-lg-6 col-lx-4">
+          <div class="single_confirmation_details bg-light" >
+            <h4 >Order Info</h4>
+            <ul>
+              <li>
+                Order Id
+                <span >: <%= order._id.toString().substr(0, 5) %></span>
+              </li>
+              <li>
+                Order Date
+                <span >: <%= order.orderDate.toLocaleDateString() %></span>
+              </li>
+              <li>
+                Customer Name
+                <span >: <%= order.userId.name %></span>
+              </li>
+              <li>
+                Order Amount
+                <span >:Rs. <%= order.totalAmount %></span>
+              </li>
+              <li>
+                Order Payment Method
+                <span >:<%= order.paymentMethod %></span>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+<!-- Display Shipping Address -->
+<div class="col-lg-6 col-lx-4">
+    <div class="single_confirmation_details bg-light">
+      <h4>Shipping Address</h4>
+      <ul>
+        <% if (order.shippingInfo && order.shippingInfo.address) { %>
+            <div class="checkout__order__product">
+                <ul>
+                  <li>
+                    <span
+                      ><%= order.shippingInfo.address.name %></span
+                    >
+                  </li>
+                  <li>
+                    <span
+                      ><%= order.shippingInfo.address.addressLine %></span
+                    >
+                  </li>
+                  <li>
+                <span><%= order.shippingInfo.address.city %></span>
+                  </li>
+                  <li>
+                    <span
+                      ><%= order.shippingInfo.address.postCode %></span
+                    >
+                  </li>
+                  <li>
+                    
+                    <span><%= order.shippingInfo.address.district %></span>
+                  </li>
+                  <li>
+                    <span><%= order.shippingInfo.address.state %>,<%= order.shippingInfo.address.country %></span>
+                  </li>
+                 
+                </ul>
+              </div>
+        <% } else { %>
+          <li>
+            <p>No Shipping Address Available</p>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+      <!-- Display Items -->
+<div class="col-lg-12 col-lx-4">
+    <div class="single_confirmation_details bg-secondary p-3">
+      <h4 style="color: white;">Order Items</h4>
+      <div class="row">
+        <% order.orderItems.forEach(item => { %>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <p style="color: white;"><span style="color: white;"><%= item.product.productName %></span></p>
+              <img style="width: 75px; height: 75px" class="rounded-circle" src="/assets/uploads/<%= item.product.productImages[0] %>" alt="">
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+  
+<!-- Order Details Section -->
+<div class="row">
+    <div class="col-lg-12">
+      <div class="order_details_iner bg-light">
+        <h3>Bill</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col" colspan="2">Product</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Unit Price</th>
+              <th scope="col">Status</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% order.orderItems.forEach(item => { %>
+              <tr>
+                <th colspan="2"><span ><%= item.product.productName %></span></th>
+                <th><span >x <%= item.quantity %></span></th>
+                <th><span > <%= item.price %></span></th>
+                <%if(item.status==="return_requested"){%>
+                <th><span style="color:red" > <%= item.status %> on </span> <span><%= returnRequest.returnDate.toLocaleDateString() %></span>
+                   {<span style="color:blueviolet"><%= returnRequest.reason %>, <%= returnRequest.comment %></span>}</th>
+<%}else{%>
+  <th><span style="color:red" > <%= item.status %></span> </th>
+  <%}%>
+                <th><span >Rs. <%= item.price * item.quantity %></span></th>
+              </tr>
+            <% }) %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="col"  colspan="5">Subtotal</th>
+              <th scope="col">Rs. <%= parseInt(order.totalAmount) %></th>
+            </tr>
+            <tr>
+              <th scope="col" colspan="5">Shipping</th>
+              <th><span >Rs. <%= order.shippingCharges %></span></th>
+            </tr>
+       
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+    </div>
+  </section>
+  <!-- Confirmation Part End -->
+</main>
+
+<%- include('../adminLayout/footer.ejs') %>

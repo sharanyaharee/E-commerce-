@@ -1,0 +1,241 @@
+<%- include('../adminLayout/header.ejs')%>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+        <li class="breadcrumb-item active">Sales Report</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+  <div class="col-lg-12">
+    <div class="row">
+      <!-- Recent Sales -->
+      <div class="col-12">
+        <div class="card recent-sales overflow-auto">
+         
+      
+          <div class="card-body">
+            <h5 class="card-title">Sales <span id="selectedPeriod">| All</span></h5>
+           
+            <div class="filter">
+              
+           
+              <div class="col-sm-8 mt-3">
+                <button type="button" class="btn" style="color: white;background-color: #012970;"
+                  onclick="return ExportToExcel()"><i class="material-icons">Export to Excel</i> </button>
+                <button type="button" class="btn" style="color: white;background-color: #012970;"
+                  onclick="return printTable()"><i class="material-icons">Print</i> </button>
+              </div>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Select Period
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item" href="#" id="allP">All</a></li>
+                  <li><a class="dropdown-item" href="#" id="todayP">Today</a></li>
+                  <li><a class="dropdown-item" href="#" id="weekP">This Week</a></li>
+                  <li><a class="dropdown-item" href="#" id="monthP">This Month</a></li>
+                </ul>
+                <button class="btn btn-warning" id="showReportBtn">Show Report</button>
+              </div>    
+             
+            </div>
+            
+            <table class="table table-borderless datatable" id="salesTable">
+              
+           
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Product</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Delivery Date</th>
+                  <th scope="col">Quantity</th>
+           
+                </tr>
+              </thead>
+              <tbody>
+                <% let orderCounter = 0; %>
+                <% orders.forEach((order) => {
+                  order.orderItems.forEach((item, index) => { %>
+                    <% orderCounter++; %>
+                    <tr>
+                      <th scope="row"><a href="#"><%= orderCounter %></a></th>
+                      <td><%= order.userId.username %></td>
+                      <td><a href="#" class="text-primary"><%= item.product.productName %></a></td>
+                      <td>₹<%= item.price %></td>
+                      <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                      <td><%= new Date(item.statusDate).toLocaleDateString() %></td>
+                      <td><%= item.quantity %></td>
+                
+                    </tr>
+                <% }); 
+                }); %>
+              </tbody>
+              
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Recent Sales -->
+</main>
+
+
+<script>
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const all = document.getElementById("allP");
+      const todayFilter = document.getElementById("todayP");
+      const weeklyFilter = document.getElementById("weekP");
+      const monthlyFilter = document.getElementById("monthP");
+      const showReportBtn = document.getElementById("showReportBtn");
+      const selectedPeriod = document.getElementById("selectedPeriod");
+      const salesTable = document.getElementById("salesTable"); 
+
+      if (!salesTable) {
+        console.error("salesTable element not found.");
+        return; 
+      }
+
+      todayFilter.addEventListener("click", () => {
+        selectedPeriod.innerText = "| Today";
+      });
+
+      weeklyFilter.addEventListener("click", () => {
+        selectedPeriod.innerText = "| This Week";
+      });
+
+      monthlyFilter.addEventListener("click", () => {
+        selectedPeriod.innerText = "| This Month";
+      });
+      all.addEventListener("click", () => {
+        selectedPeriod.innerText = "| All";
+
+      });
+
+
+      showReportBtn.addEventListener("click", async () => {
+        const selectedOption = selectedPeriod.innerText.trim();
+        let filter = "";
+
+        if (selectedOption === "| Today") {
+    filter = "today";
+  } else if (selectedOption === "| This Week") {
+    filter = "week";
+  } else if (selectedOption === "| This Month") {
+    filter = "month";
+  } else if (selectedOption === "| All") {
+   
+    window.location.href = '/admin/salesReport';
+    return;
+  } else {
+    console.error("Unexpected selectedOption value:", selectedOption);
+    return; 
+  }
+        await fetchData(filter);
+      });
+
+      async function fetchData(filter) {
+        try {
+          const response = await fetch(`/admin/filteredOrders?filter=${filter}`);
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+
+          const tbody = salesTable.querySelector("tbody");
+    tbody.innerHTML = "";
+    let orderCounter = 0;
+
+data.forEach((order, index) => {
+  order.orderItems.forEach((item, itemIndex) => {
+    const row = document.createElement("tr");
+    orderCounter++;
+    row.innerHTML = `
+      <th scope="row">${orderCounter}</th> 
+      <td>${order.userId.username}</td>
+      <td><a href="" class="text-primary">${item.product.productName}</a></td>
+      <td>Rs${item.price}</td>
+      <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+      <td>${new Date(item.statusDate).toLocaleDateString()}</td>
+      <td>${item.quantity}</td>
+      
+    `;
+    tbody.appendChild(row);
+  });
+});
+
+
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    });
+</script>
+
+<script>
+function ExportToExcel(type, fn, dl) {
+  var elt = document.getElementById("salesTable");
+  var ws = XLSX.utils.table_to_sheet(elt);
+  
+  // Set column widths
+  ws["!cols"] = [];
+  var colCount = elt.rows[0].cells.length;
+  for (var i = 0; i < colCount; i++) {
+    ws["!cols"].push({ wpx: 100 });
+  }
+  
+  // Set row heights
+  ws["!rows"] = [];
+  var rowCount = elt.rows.length;
+  for (var i = 0; i < rowCount; i++) {
+    ws["!rows"].push({ hpt: 20 });
+  }
+  
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+  return dl ?
+    XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+    XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
+}
+
+function printTable() {
+  var table = document.getElementById("salesTable");
+  var newWin = window.open('', 'Print-Window');
+  newWin.document.open();
+  
+  newWin.document.write('<html><head><title>Print Table</title>');
+  newWin.document.write('<style>table { border-collapse: collapse; } table, th, td { border: 1px solid black; padding: 8px; }</style>');
+  newWin.document.write('</head><body>');
+
+  newWin.document.write('<table>');
+
+  for (var i = 0; i < table.rows.length; i++) {
+    newWin.document.write('<tr>');
+    for (var j = 0; j < table.rows[i].cells.length; j++) {
+      newWin.document.write('<td>' + table.rows[i].cells[j].innerHTML + '</td>');
+    }
+    newWin.document.write('</tr>');
+  }
+  newWin.document.write('</table>');
+  newWin.document.write('</body></html>');
+
+  newWin.document.close();
+  setTimeout(function () { newWin.print(); }, 10);
+}
+
+  </script>
+
+
+<%- include('../adminLayout/footer.ejs')%>

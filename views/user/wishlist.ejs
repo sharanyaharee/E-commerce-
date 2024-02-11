@@ -1,0 +1,98 @@
+<html>
+    <body>
+        <%- include('../partials/header.ejs')%>
+       <!-- Breadcrumb Begin -->
+       <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <span>Wishlist</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Shop Cart Section Begin -->
+    <section class="shop-cart spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shop__cart__table" id="reloadDiv">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                        
+                                    <th>Stock Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
+                                  <% wishlist.products.forEach(item => { %>
+                                    <tr>
+                                      <td class="cart__product__item">
+                                        <% if (item.productImages && item.productImages.length > 0) { %>
+                                          <img style="height: 100px; width: 100px;" src="/assets/uploads/<%= item.productImages[0] %>" alt="">
+                                        <% } else { %>
+                                          <img src="/path/to/placeholder-image.jpg" alt="Placeholder Image">
+                                        <% } %>
+                                        <div class="cart__product__item__title">
+                                          <h6><%= item.productName %></h6>
+                                        </div>
+                                      </td>
+                                      <td class="cart__price">Rs.<%= item.price %></td>
+                                      <td class="cart__price"><%= item.quantity %> no's left!</td>
+                                      <td>
+                                        <% if (isInCart(item)) { %>
+                                          <span class="bg-light p-3 text-dark" ><a href="/cart">Go to Cart</a></span
+                                        >
+                                        <% } else { %>
+                                            <a href="/addToCart/<%= item._id %>" class="cart p-5"><span class="icon_bag_alt"></span></a>
+                                        <% } %>
+                                      
+                                    </td>
+                                    <td  class="cart__close">
+                                      <a href="/removeWishlist/<%= item._id %>">
+                                        <span class="icon_close"></span>
+                                    </a>
+                                    </td>
+                                    
+                                    
+                                    </tr>
+                                  <% }); %>
+                                <% } else { %>
+                                  <tr>
+                                    <td>Your Wishlist is empty!  <br>Visit our shop page to favorite some product! </td> 
+                                  </tr>
+                                <% } %>
+                              </tbody>
+                              
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="cart__btn">
+                        <a href="/shop">Continue Shopping</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    <!-- Shop Cart Section End -->
+
+
+
+    
+  
+
+<%- include('../partials/footer.ejs')%> 
+    </body>
+</html>

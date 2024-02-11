@@ -1,0 +1,102 @@
+<%- include('../partials/header.ejs') %>
+
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/home"><i class="fa fa-home"></i> Home</a>
+                    <span>Edit Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+
+    <div class="container">
+      <h2 class="mb-5">Edit Your details</h2>
+      <form class="checkout__for" action="/editProfile" method="post" onsubmit="return validateForm()">
+
+            <div class="row">
+              
+                <div class="col-lg-8">
+                    
+                    <div class="row">
+                        <div class="col-lg-12">
+                          
+                            <div class="checkout__form__input">
+                              <label class="form-label">Name </label>
+                                <input type="text" id="name" class="form-control" value="<%= userData.name %>"  name="name"  required >
+                                
+                            <div id="nameError" class="text-danger"></div>
+                            </div>
+                            <div class="checkout__form__input">
+                              <label class="form-label">Email</label>
+                                <input  readonly type="text"  class="form-control" value="<%= userData.email %>" name="email">
+        
+                            </div>
+                            <div class="checkout__form__input">
+                                <label class="form-label">Mobile Number </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">+91</span>
+                                    <input type="text" id="mobile" class="form-control" value="<%=userData.mobile %>" name="mobile" >
+                                </div>
+                                <div id="mobileError" class="text-danger"></div>
+                            </div>
+                            <div class="checkout__form__input">
+                              <label class="form-label">Joined Date </label>
+                              <input readonly type="text" class="form-control" placeholder=""
+                                  aria-label="Phone number" value="<%= userData.createdAt.toLocaleString() %>">
+                          </div>
+                        </div>
+                        </div>
+                    </div>
+                   
+                    
+                </div>
+                <button class="site-btn my-3" type="submit">Update</button>
+            </form>
+        </div>
+    </section>
+ 
+   
+    <script>
+        function validateForm() {
+            console.log('validateForm function called');
+            const name = document.getElementById('name').value;
+            const mobile = document.getElementById('mobile').value;
+            const nameError = document.getElementById('nameError');
+            const mobileError = document.getElementById('mobileError');
+            const nameRegex = /^[a-zA-Z]+$/;
+            const mobileRegex = /^[0-9]{10}$/;
+    
+            if (!name) {
+                nameError.textContent = 'Name is required';
+                return false;
+            } else if (!nameRegex.test(name)) {
+                nameError.textContent = 'Name can only contain letters and spaces';
+                return false;
+            } else {
+                nameError.textContent = '';
+            }
+    
+            if (!mobile) {
+                mobileError.textContent = 'Mobile number is required';
+                return false;
+            } else if (!mobileRegex.test(mobile)) {
+                mobileError.textContent = 'Enter a valid mobile number';
+                return false;
+            } else {
+                mobileError.textContent = '';
+            }
+    
+            return true;
+        }
+    </script>
+    <%- include('../partials/footer.ejs') %>

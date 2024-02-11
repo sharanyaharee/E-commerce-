@@ -1,0 +1,181 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Ashion Template" />
+  <meta name="keywords" content="Ashion, unica, creative, html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>StyleSync | Synced in Style, Tailored for You</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+<script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js">
+  
+</script>
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cookie&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+ 
+  <!-- Css Styles -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="/javascript/" type="text/css"> -->
+  <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+  <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css" />
+  <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  
+<style>
+@media only screen and (max-width: 768px) {
+  .col-lg-3 {
+    width: 100%; 
+  }
+
+  .shop__sidebar {
+    display: none; 
+  }
+
+  .sidebar-toggle {
+    display: block; 
+    cursor: pointer;
+  }
+}@media only screen and (min-width: 769px) {
+  .sidebar-toggle {
+    display: none;
+  }
+  .shop__sidebar {
+    display: block;
+  }
+
+}
+
+</style>
+</head>
+<body>
+  <!-- Page Preloder -->
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Offcanvas Menu Begin -->
+  <div class="offcanvas-menu-overlay"></div>
+  <div class="offcanvas-menu-wrapper">
+    <div class="offcanvas__close">+</div>
+    <ul class="offcanvas__widget">
+      <li><span class="icon_search search-switch"></span></li>
+      <li>
+        <a href="#"
+          ><span class="icon_heart_alt"></span>
+          <div class="tip">2</div>
+        </a>
+      </li>
+      <li>
+        <a href="#"
+          ><span class="icon_bag_alt"></span>
+          <div class="tip">2</div>
+        </a>
+      </li>
+    </ul>
+    <div class="offcanvas__logo">
+      <a href="/"><img src="img/StyleSync.png" alt="" /></a>
+    </div>
+    <div id="mobile-menu-wrap"></div>
+    <div class="offcanvas__auth">
+      <a href="#">Login</a>
+      <a href="#">Register</a>
+    </div>
+  </div>
+  <!-- Offcanvas Menu End -->
+
+  <!-- Header Section Begin -->
+  <header class="header">
+    <div class="container-fluid he">
+      <div class="row">
+        <div class="col-xl-3 col-lg-2">
+          <div class="header__logo">
+            <a href="/"><img src="/img/StyleSync.png" alt="" /></a>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-7">
+          <nav class="header__menu">
+            <ul class="d-flex ">
+              <li class="active"><a href="/">Home</a></li>
+              <li><a href="/shop">Shop</a></li>
+
+              <li>
+                <a href="#">Categories</a>
+
+                <ul class="dropdown">
+                  <% locals.categories.forEach(category => { %>
+                  <li>
+                    <a href="/shop<%= category._id ? `/${category._id}` : '' %>"><%= category.name %></a>
+                  </li>
+                                    <% }); %>
+                </ul>
+              </li>
+
+              <li><a href="/contact">Contact</a></li>
+              <li><a href="/profile"> Account</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-lg-3">
+          <div class="header__right">
+            <div class="header__right__auth">
+              <% if (session && session.userData && session.userData.username) {
+              %>
+              <div class="dropdown">
+                <a
+                  class="dropdown-toggle"
+                  href="#"
+                  role="button"
+                  id="userDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="icon_profile"></span> <%=
+                  session.userData.username %>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="userDropdown">
+                  <a class="dropdown-item" href="/profile">My Profile</a>
+                  <a class="dropdown-item" href="/userSignout">Logout</a>
+                </div>
+              </div>
+              <% } else { %>
+              <a href="/userLogin" class="btn btn-outline-light">Login</a>
+              <a href="/userSignup" class="btn btn-outline-light">Register</a>
+              <% } %>
+            </div>
+
+            <div class="header__right__widget">
+          
+              <li>
+                
+                <a href="/wishlist"
+                  ><span class="icon_heart_alt"></span>
+               
+                </a>
+              </li>
+              <li>
+                <a href="/cart"
+                  ><span class="icon_bag_alt"></span>
+                  
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="canvas__open">
+        <i class="fa fa-bars"></i>
+      </div>
+    </div>
+  </header>

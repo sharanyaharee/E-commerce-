@@ -1,0 +1,85 @@
+<%- include('../adminLayout/header.ejs') %>
+    
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Add Category</h1>
+    
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/adminDashboard">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin/adminCategoryView">category list</a></li>
+        <li class="breadcrumb-item active">Add category</li>
+      </ol>
+    </nav>
+
+ 
+  </div><!-- End Page Title -->
+    <div class="col-lg-9 ">
+      <div class="container ">
+        <% if (msg) { %>
+                 <p style="color:red"> *<%= msg %></p>
+        <% } %>
+          <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Category</h5>
+                  <form
+                      action="/admin/adminAddCategory"
+                      method="POST"
+                      enctype="multipart/form-data"
+                  >
+                      <div class="mb-3">
+                          <label for="categoryName" class="form-label">Category Name</label>
+                          <input
+                              type="text"
+                              class="form-control"
+                              id="categoryName"
+                              name="name"
+                              required
+                          />
+                      </div>
+  
+                      <div class="mb-3">
+                          <label for="categoryImage" class="form-label">Category Image</label>
+                          <input
+                              type="file"
+                              class="form-control"
+                              id="categoryImage"
+                              name="image"
+                              accept="image/*"
+                              required
+                              onchange="displayImage(this)"
+                          />
+                          <img id="imagePreview" class="mt-2" style="max-width: 200px; max-height: 200px;" />
+                      </div>
+  
+                      <button type="submit" class="btn btn-warning">Add Category</button>
+                      <a href="/admin/adminCategoryView" class="btn btn-secondary">Cancel</a>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <script>
+      function displayImage(input) {
+          const imagePreview = document.getElementById("imagePreview");
+  
+          const file = input.files[0];
+  
+          if (file) {
+              const reader = new FileReader();
+  
+              reader.onload = function (e) {
+                  imagePreview.src = e.target.result;
+              };
+  
+              reader.readAsDataURL(file);
+          }
+      }
+  </script>
+  
+    
+    
+  </main><!-- End #main -->
+  
+<%- include('../adminLayout/footer.ejs') %>

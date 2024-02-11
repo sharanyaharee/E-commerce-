@@ -1,0 +1,315 @@
+<html>
+  <%- include('../partials/header.ejs') %>
+
+  <!-- Breadcrumb Begin -->
+  <div class="breadcrumb-option">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="breadcrumb__links">
+            <a href="/"><i class="fa fa-home"></i> Home</a>
+            <span>Order History</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Breadcrumb End -->
+  <!-- Return Modal -->
+  <div
+    class="modal fade"
+    id="returnModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="returnModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-white">
+          <h5 class="modal-title" id="returnModalLabel">Return Order</h5>
+
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            onclick="closeReturnModal()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form id="returnForm"  action="/returnOrder" method="POST">
+              <input type="hidden" id="orderId" name="orderId" value="">
+              <input type="hidden" id="productId" name="productId" value="">
+    
+            <div class="form-group">
+              <label>Reason for return:</label><br />
+              <input type="radio" id="damaged" name="reason" value="damaged" />
+              <label for="damaged"> Damaged</label><br />
+              <input
+                type="radio"
+                id="notPreferredColor"
+                name="reason"
+                value="notPreferredColor"
+              />
+              <label for="notPreferredColor"> Not the preferred color</label
+              ><br />
+              <input type="radio" id="other" name="reason" value="other" />
+              <label for="other"> Other (Specify below)</label>
+            </div>
+            <div class="form-group">
+              <label for="otherReason">Specify other reason:</label>
+              <textarea
+                class="form-control"
+                id="otherReason"
+                name="otherReason"
+                rows="2"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-sm btn-secondary" onclick="submitReturnForm(event)">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Cart Section Begin -->
+  <section class="shop-cart spad">
+    <div class="container">
+      <h3 class="text-center bolder">Orders</h3>
+      <div class="row">
+          <div class="col-lg-12">    
+              <h4 class="coupon__link"></h4>
+        </div>
+        <div class="col-lg-12">
+          <div class="shop__cart__table">
+            <% if(orders.length > 0){ %>
+            <table class="striped">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Order Id</th>
+                  <th>order Date</th>
+                  <th>Quantity</th>
+                  <th>Order Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for(let i = 0; i < orders.length; i++){ %>
+                 <% for(let j = 0; j < orders[i].orderItems.length; j++){ %>
+                <tr>
+                  <td class="cart__product__item">
+                    <div class="cart__product__item__title">
+                      <h6>
+                        <%= orders[i].orderItems[j].product.productName %>
+                      </h6>
+                    </div>
+                  </td>
+                  <td class="cart__price">
+                    <%=orders[i]._id.toString().substr(0, 5) %><%=
+                    orders[i].orderItems[j].quantity %>
+                  </td>
+                  <td class="cart__price">
+                    <%= orders[i].orderDate.toLocaleDateString() %>
+                  </td>
+                  <td class="cart__price">
+                    <%= orders[i].orderItems[j].quantity %>
+                  </td>
+               
+                  <td class="cart__total">
+                   
+                    <%=orders[i].totalAmount %>
+                  </td>
+                  
+
+
+                  <td id="orderStatus" style="color: green; font-weight: bolder">
+                    <% if (orders[i].orderItems[j].status === 'user_cancelled') { %>
+                      Cancelled by User
+                    <% } else if (orders[i].orderItems[j].status === 'admin_cancelled') { %>
+                      Cancelled by Vendor
+                    <% } else { %>
+                      <%= orders[i].orderItems[j].status %>
+                    <% } %>
+                  </td>
+                  
+
+                  
+                  <td>
+                    <a
+                      href="/orderDetails?orderId=<%= orders[i]._id %>&productId=<%= orders[i].orderItems[j].product._id %>"
+                      class="btn btn-secondary m-2"
+                    >
+                      Details</a
+                    >
+
+                    <% if(orders[i].orderItems[j].status === "processing") { %>
+                    <% if (orders[i].orderItems[j].status !== "user_cancelled"
+                    && orders[i].orderItems[j].status !== "admin_cancelled") {
+                    %>
+
+                    
+                    <a href="#" id="can" onclick="confirmCancelOrder('<%= orders[i]._id %>', '<%= orders[i].orderItems[j].product._id %>')"
+                       class="btn btn-warning m-2">Cancel</a>
+                    
+                    </a>
+                    <% } %>
+                     <% } else if(orders[i].orderItems[j].status ==="shipped") { %> 
+                      <% if (orders[i].orderItems[j].status !== "user_cancelled" && orders[i].orderItems[j].status !=="admin_cancelled") { %>
+                   
+                    <a
+                      href="/cancelOrder?orderId=<%= orders[i]._id %>&orderItemId=<%= orders[i].orderItems[j].product._id %>"
+                      class="btn btn-warning m-2"
+                    >
+                      Cancel
+                    </a>
+                    <% } %> <% } else if(orders[i].orderItems[j].status ===
+                    "delivered"){ %>
+                    <a
+                      href="#"
+                      id="returnButton"
+                      class="btn btn-danger m-2 return-btn"
+                      data-order-id="<%= orders[i]._id %>"
+                      data-product-id="<%= orders[i].orderItems[j].product._id %>"
+                      onclick="openReturnModal(this)"
+                    >
+                      Return
+                    </a>
+                    <% } %>
+                  </td>
+                </tr>
+                <% } %>
+                <tr></tr>
+                <% } %>
+              </tbody>
+            </table>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12 text-center">
+  <div class="pagination__option">
+    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+      <% if (i === pagination.currentPage) { %>
+        <span class="current"><%= i %></span>
+      <% } else { %>
+        <a href="?page=<%= i %>"><%= i %></a>
+      <% } %>
+    <% } %>
+
+    <% if (pagination.currentPage < pagination.totalPages) { %>
+      <a href="?page=<%= pagination.currentPage + 1 %>"><span class="arrow_right_alt"></span></a>
+    <% } else { %>
+      <span class="disabled"><span class="arrow_right_alt"></span></span>
+    <% } %>
+  </div>
+</div>
+  </section>
+  <script>
+    function openReturnModal(button) {
+       const returnModal = document.getElementById("returnModal");
+        returnModal.classList.add("show");
+        returnModal.style.display = "block";
+
+        const orderId = button.dataset.orderId;
+    const productId = button.dataset.productId;
+    document.getElementById("orderId").value = orderId;
+    document.getElementById("productId").value = productId;
+    }
+
+    function submitReturnForm(event) {
+    event.preventDefault();
+
+    const selectedReason = document.querySelector('input[name="reason"]:checked');
+    const comment = document.getElementById("otherReason").value.trim();
+
+    if (selectedReason) {
+        const reason = selectedReason.value;
+        const comment=document.getElementById("otherReason").value.trim();
+        const orderId = document.getElementById("orderId").value;
+        const productId = document.getElementById("productId").value;
+
+      
+
+    fetch('/returnOrder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ 'reason': reason, 'comment': comment, 'orderId': orderId, 'productId': productId })
+    }).then((response) => {
+                    if (response.ok) {
+                        const returnButton = document.getElementById("returnButton");
+                        returnButton.textContent = "Return Requested";
+                        const returnModal = document.getElementById("returnModal");
+                        returnModal.classList.remove("show");
+                        returnModal.style.display = "none";
+                        document.getElementById("otherReason").value = "";
+                        Swal.fire("Success!", "Return request submitted successfully", "success");
+                    } else {
+                        Swal.fire(`Error submitting return request:${response.statusText}`);
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire(`Failed to submit return request. Please try again later`);
+                });
+        } else {
+            Swal.fire(`Please select a reason for return.`);
+        }
+    }
+
+    function closeReturnModal() {
+        const returnModal = document.getElementById("returnModal");
+        returnModal.classList.remove("show");
+        returnModal.style.display = "none";
+    }
+  
+function confirmCancelOrder(orderId, orderItemId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to cancel this order. Are you sure you want to proceed?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, cancel it!',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      cancelOrder(orderId, orderItemId);
+    }
+  });
+}
+
+function cancelOrder(orderId, orderItemId) {
+  fetch(`/cancelOrder?orderId=${orderId}&orderItemId=${orderItemId}`, {
+    method: 'GET',
+  }).then((response) => {
+    if (response.ok) {
+      Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success');
+      const cancelElement = document.getElementById(`can`);
+      const orderStatusElement = document.getElementById(`orderStatus`);
+      if (orderStatusElement) {
+        orderStatusElement.textContent = 'Order has been cancelled by user';
+      }
+      if (cancelElement) {
+        cancelElement.remove();
+      }
+    } else {
+      Swal.fire('Error!', 'Failed to cancel order.', 'error');
+    }
+  }).catch((error) => {
+    Swal.fire('Error!', 'Failed to cancel order. Please try again later.', 'error');
+  });
+}
+
+
+</script>
+
+  <%- include('../partials/footer.ejs') %>
+</html>

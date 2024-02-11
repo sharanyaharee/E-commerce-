@@ -1,0 +1,90 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Products</h1>
+
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/admin/adminDashboard">Home</a>
+        </li>
+        <li class="breadcrumb-item active">product list</li>
+      </ol>
+    </nav>
+
+    <div class="container d-flex justify-content-end">
+      <a href="/admin/adminAddProduct" class="btn btn-warning">Add Product</a>
+    </div>
+    
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table datatable table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Product Id</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  <% products.forEach(product => { %> <%
+                  product.productImages.forEach((image, index) => { %>
+                  <tr>
+                    <% if (index === 0) { %>
+                      <td><%= product._id%></td>
+                    <td><%= product.productName %></td>
+                    <td>
+                      <% product.productImages.forEach((image, index) => { %>
+                      <img
+                        class="m-3"
+                        src="/assets/uploads/<%= image %>"
+                        alt="Product Image"
+                        height="50"
+                      />
+                      <% }); %>
+                    </td>
+                    <td><%= product.price %></td>
+                    <td><%= product.quantity %></td>
+                    <td><%= product.category.name %></td>
+                    <td>
+                      <button
+                        id="toggleButton-<%= product._id %>"
+                        onclick="toggleBlock('/admin/toggleBlockPro/', '<%= product._id %>')"
+                        class="btn btn-sm btn-secondary"
+                      >
+                        <%= product.blocked ? 'Unlisted' : 'Listed' %>
+                      </button>
+                    </td>
+                    <td>
+                      <a
+                        href="/admin/editProduct/<%= product._id %>"
+                        class="btn btn-sm btn-warning"
+                        >Edit</a
+                      >
+                    </td>
+                    <% } %>
+                  </tr>
+                  <% }); %> <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/js/toggleList.js"></script>
+
+<%- include('../adminLayout/footer.ejs') %>

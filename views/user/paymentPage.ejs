@@ -1,0 +1,174 @@
+<html>
+  <%- include('../partials/header.ejs') %>
+
+  <!-- Breadcrumb Begin -->
+  <div class="breadcrumb-option">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="breadcrumb__links">
+            <a href="/"><i class="fa fa-home"></i> Home</a>
+            <span>Payment Options</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Breadcrumb End -->
+
+  <!-- Checkout Section Begin -->
+  <section class="checkout spad">
+    <div class="container">
+      <form id="payment" method="post" class="checkout__form">
+        <div class="col-lg-12">
+          <h5>Confirm Your Order</h5>
+        </div>
+
+        <div class="row" style="justify-content: center">
+          <div class="col-lg-4">
+            <div class="checkout__order">
+              <div class="checkout__order__total">
+                <ul>
+                  <li>Total Payable <span><%= totalAmount %></span></li>
+                </ul>
+              </div>
+              <div class="checkout__order__widget">
+                <label for="razorpay">
+                  RazorPay
+                  <input
+                    type="radio"
+                    value="RAZORPAY"
+                    name="flexRadioDefault"
+                    id="razorpay"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+
+              <div class="checkout__order__widget">
+                <label for="cod">
+                  COD
+                  <input
+                    type="radio"
+                    value="COD"
+                    name="flexRadioDefault"
+                    id="cod"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+
+                <label for="wallet">
+                  Wallet
+                  <input
+                    type="radio"
+                    value="WALLET"
+                    name="flexRadioDefault"
+                    id="wallet"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+
+                <p>
+                  Confirm Your Payment, there is no refund policy available as
+                  of now.
+                </p>
+              </div>
+              <button type="submit" id="payment-button" class="site-btn">
+                Confirm Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+  <!-- Checkout Section End -->
+  <script id="totalAmountScript" type="application/json" data-total-amount="<%= totalAmount %>"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+    document
+      .getElementById("payment")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        const totalAmountScript = document.getElementById('totalAmountScript');
+        const totalAmount = JSON.parse(totalAmountScript.getAttribute('data-total-amount'));
+
+        const selectedRadioButton = document.querySelector(
+          'input[name="flexRadioDefault"]:checked'
+        );
+
+  if (!selectedRadioButton) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please select a payment option.',
+    });
+    return;
+  }
+        const radioButtonSelectedValue = selectedRadioButton.value;
+
+        fetch("/orderConfirmation", {
+          method: "POST",
+          body: JSON.stringify({ flexRadioDefault: radioButtonSelectedValue ,
+            amount: totalAmount ,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              if (radioButtonSelectedValue === "RAZORPAY") {
+                var options = {
+                  key: "" + data.key_id + "",
+                  amount: "" + data.amount + "",
+                  currency: "INR",
+                  name: "StyleSync",
+                  description: "Synced in style,Tailored for you",
+                  image: "https://i.postimg.cc/L803rJyj/Style-Sync.png",
+                  order_id: "" + data.order_id + "", 
+                  handler: function (response) {
+                    const redirectUrl = `/placeOrder?amount=${totalAmount}&paymentMethod=RAZORPAY`;;
+                    
+                    window.location.href = redirectUrl;
+                  },
+                  prefill: {
+                    name: "" + data.name + "", 
+                    email: "" + data.email + "",
+                    contact: "9000090000", 
+                  },
+                  notes: {
+                    address: "Razorpay Corporate Office",
+                  },
+                  theme: {
+                    color: "#ffc107",
+                  },
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function (response) {
+                  alert("Payment Failed");
+                });
+                rzp1.open();
+              } else if (radioButtonSelectedValue === "COD") {
+                window.open("/paymentSuccess", "_self");
+              } else if (radioButtonSelectedValue === "WALLET") {
+                handleWalletPayment(data);
+              }
+            } else {
+              alert(data.msg);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+   
+  </script>
+  <script src="/js/handleWallet.js"></script>
+  <%- include('../partials/footer.ejs') %>
+</html>

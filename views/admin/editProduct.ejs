@@ -1,0 +1,214 @@
+<%- include('../adminLayout/header.ejs') %>
+<style>
+  .image-preview {
+    display: none;
+  }
+</style>
+<main id="main" class="main">
+  <div class="pagetitle">
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/adminProductView">Product list</a></li>
+        <li class="breadcrumb-item active"> Edit product</li>
+      </ol>
+    </nav>
+  </div>
+
+  <section class="border">
+    <div class="row">
+      <div class="col-lg-12 ">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Edit Product</h5>
+
+            <form
+              class="row g-3"
+              method="POST"
+              action="/admin/editProduct/<%= product._id %>"
+              enctype="multipart/form-data"
+              onsubmit="return validateForm()"
+            >
+            <input type="hidden"name="deletedImages" id="deletedImagesInput" value="">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    name="productName"
+                    class="form-control"
+                    id="productName"
+                    placeholder="Product Name"
+                    value="<%= product.productName %>"
+                    required
+                    oninput="validateProductName(this)"
+                  />
+                  <label for="productName">Product Name</label>
+                  <div id="productNameError" class="text-danger"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    type="number"
+                    name="price"
+                    class="form-control"
+                    id="price"
+                    placeholder="Price"
+                    value="<%= product.price %>"
+                    required
+                    oninput="validateNumericInput(this, 'priceError')"
+                  />
+                  <label for="price">Price</label>
+                  <div id="priceError" class="text-danger"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="col-md-12">
+                  <div class="form-floating">
+                    <input
+                      type="number"
+                      name="quantity"
+                      class="form-control"
+                      id="quantity"
+                      placeholder="Quantity"
+                      value="<%= product.quantity %>"
+                      required
+                      oninput="validateNumericInput(this, 'quantityError')"
+                    />
+                    <label for="quantity">Quantity</label>
+                    <div id="quantityError" class="text-danger"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <select
+                    name="category"
+                    class="form-select"
+                    id="category"
+                    aria-label="Select Category"
+                    required
+                  >
+                    <% categories.forEach(category => { %>
+                      <option value="<%= category._id %>"<%= category._id.toString() === product.category.toString() ? ' selected' : '' %>>
+                        <%= category.name %>
+                      </option>
+                    <% }); %>
+                  </select>
+                  <label for="category">Select Category</label>
+                </div>
+              </div>
+
+              <div class="col-lg-12">
+                <label for="inputImages" class="col-sm-10">Product Images</label>
+              </div>
+              <% for (let i = 0; i < 4; i++) { %>
+                <div class="col-lg-6">
+                  <input
+                    accept="image/*"
+                    class="form-control"
+                    name="productImages"
+                    id="inputImages<%= i + 1 %>"
+                    type="file"
+                    onchange="displayImage(this, 'imagePreview<%= i + 1 %>')"
+                  />
+                  <img id="imagePreview<%= i + 1 %>" class="mt-2" style="max-width: 150px; max-height: 150px;" src="/assets/uploads/<%= product.productImages[i] %>" />
+                  <button type="button" class="btn btn-sm btn-secondary m-2" onclick="deleteImage('inputImages<%= i + 1 %>', 'imagePreview<%= i + 1 %>', '<%= product.productImages[i] %>')">Delete</button>
+                </div>
+              <% } %>
+              
+
+              <div class="col-12">
+                <div class="form-floating">
+                  <textarea
+                    class="form-control"
+                    name="description"
+                    placeholder="Description"
+                    id="description"
+                    style="height: 100px"
+                    required
+                  ><%= product.description %></textarea>
+                  <label for="description">Description</label>
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-warning">Save Changes</button>
+                <a href="/admin/adminProductView" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  function displayImage(input, imagePreviewId) {
+    const imagePreview = document.getElementById(imagePreviewId);
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        imagePreview.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.src = "";
+    }
+  }
+
+  function deleteImage(inputId, imagePreviewId,imageName) {
+    const input = document.getElementById(inputId);
+    const imagePreview = document.getElementById(imagePreviewId);
+
+    const deletedImagesInput = document.getElementById('deletedImagesInput');
+    
+    let deletedImages = JSON.parse(deletedImagesInput.value || '[]'); 
+    deletedImages.push(imageName); 
+    deletedImagesInput.value = JSON.stringify(deletedImages);
+
+    input.value = "";
+    imagePreview.src = "";
+  }
+
+  function validateProductName(input) {
+    const productNameError = document.getElementById("productNameError");
+    const maxLength = 30;
+
+    if (input.value.length > maxLength) {
+      productNameError.innerHTML = `Product name should not exceed ${maxLength} characters.`;
+    } else {
+      productNameError.innerHTML = "";
+    }
+  }
+
+  
+  function validateNumericInput(input, errorElement) {
+  const error = document.getElementById(errorElement);
+  const value = parseInt(input.value);
+
+  if (value < 0 || isNaN(value)) {
+    error.innerHTML = "This field value must be a positive number.";
+  } else {
+    error.innerHTML = "";
+  }
+}
+
+  
+  function validateForm() {
+    console.log('validateForm is called');
+    const productNameError = document.getElementById("productNameError").innerHTML;
+
+    return productNameError === "";
+  }
+
+
+</script>
+
+
+
+<%- include('../adminLayout/footer.ejs') %>

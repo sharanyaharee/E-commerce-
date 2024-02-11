@@ -1,0 +1,100 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/admin/adminDashboard">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="/admin/adminCategoryView">Category list</a>
+        </li>
+        <li class="breadcrumb-item active">Edit Category</li>
+      </ol>
+    </nav>
+  </div>
+  <section class="border">
+    <div class="row">
+      <div class="col-lg-12">
+        <% if (msg) { %>
+          <p style="color:red"> *<%= msg %></p>
+ <% } %>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Edit Category</h5>
+
+            <form
+              action="/admin/editCategory/<%= category._id %>"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="mb-3">
+                <label for="editCategoryName" class="form-label"
+                  >Category Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editCategoryName"
+                  name="editCategoryName"
+                  value="<%= category.name %>"
+                  required
+                />
+              </div>
+
+              <div class="mb-5">
+                <label for="editCategoryImage" class="form-label"
+                  >Category Image</label
+                >
+                <input
+                  type="file"
+                  id="editCategoryImage"
+                  class="form-control"
+                  name="editCategoryImage"
+                  accept="image/*"
+                  onchange="displayImage(this, 'imagePreview')"
+                
+                />
+                <img
+                  id="imagePreview"
+                  class="mt-3"
+                  style="max-width: 150px; max-height: 150px"
+                  src="<%= category.image %>"
+                  alt="Category Preview"
+                />
+              </div>
+
+              <button type="submit" class="btn btn-warning">
+                Save Changes
+              </button>
+
+              <a href="/admin/adminCategoryView" class="btn btn-secondary"
+                >Cancel</a
+              >
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  function displayImage(input, previewId) {
+    const imagePreview = document.getElementById(previewId);
+
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        imagePreview.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+
+<%- include('../adminLayout/footer.ejs') %>

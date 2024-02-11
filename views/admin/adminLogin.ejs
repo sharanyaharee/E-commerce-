@@ -1,0 +1,140 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Ashion Template" />
+    <meta name="keywords" content="Ashion, unica, creative, html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>StyleSync | Synced in Style, Tailored for You</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cookie&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" />
+    <!-- <link rel="stylesheet" href="/javascript/" type="text/css"> -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css" />
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+    <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css" />
+    <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css" />
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+    <style>
+  
+      .error-message {
+        color: brown;
+      }
+
+      #intro {
+        background-image: url("/img/image1.avif");
+        height: 100%;
+        background-size: 100%;
+      }
+
+      .form-outline {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-outline input.form-control {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .form-outline label.form-label {
+        position: absolute;
+        top: 0.2rem;
+        left: 0;
+        transition: all 0.3s;
+        pointer-events: none;
+        color: #495057;
+      }
+
+      .form-outline input.form-control:focus + label.form-label,
+      .form-outline
+        input.form-control:not(:placeholder-shown)
+        + label.form-label {
+        top: -1rem;
+        font-size: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background image -->
+    <div id="intro" class="bg-image shadow-2-strong">
+      <div
+        class="mask d-flex align-items-center h-100 "
+        style="background-color: rgba(0, 0, 0, 0.8)"
+      >
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-md-8">
+              <form
+                action="/admin/adminLogin"
+                method="POST"
+                class="bg-white rounded-5 shadow-5-strong p-5"
+              >
+                <h4 class="text-center">Admin Login</h4>
+
+                <% if (message) { %>
+                <p class="error-message"><%= message %></p>
+                <% } %>
+
+                <!-- Email input -->
+                <div class="form-outline mb-4">
+                  <input
+                    type="email"
+                    id="form1Example1"
+                    name="email"
+                    class="form-control"
+                  />
+                  <label class="form-label" for="form1Example1"
+                    >Email address</label
+                  >
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                  <input
+                    type="password"
+                    id="form1Example2"
+                    name="password"
+                    class="form-control"
+                  />
+                  <label class="form-label" for="form1Example2">Password</label>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-block">
+                  Sign in
+                </button>
+                <p class="text-muted">
+                  Are you a user?
+                  <a href="/userLogin" class="fw-bold text-body"> Log In </a>
+                </p>
+                <p class="text-muted">
+                  Go Back?
+                  <a href="/" class="font-weight text-body">Home</a>
+                </p>
+              
+                
+              
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

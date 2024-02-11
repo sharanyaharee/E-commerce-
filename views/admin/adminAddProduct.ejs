@@ -1,0 +1,245 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Add Products</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/adminProductView">Product list</a></li>
+        <li class="breadcrumb-item active">Add product</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  
+
+<section class=" border">
+<div class="col-lg-12 ">
+  <div class="container">
+   
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Products</h5>
+
+        <form
+          class="row g-3"
+          method="POST"
+          action="/admin/adminAddProduct"
+          enctype="multipart/form-data"
+          onsubmit="return validateForm()"
+        >
+ 
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input
+                type="text"
+                name="productName"
+                class="form-control"
+                id="productName"
+                placeholder="name"
+                required
+                oninput="validateProductName(this)"
+              />
+              <label for="productName">Product Name</label>
+            </div>
+          </div>
+          <% if (message) { %>
+            <div class="text-danger" >
+             * <%= message %>
+            </div>
+          <% } %>
+         
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input
+                type="number"
+                name="price"
+                class="form-control"
+                id="price"
+                placeholder="Price"
+              required
+                oninput="validateNumericInput(this, 'priceError')"
+              />
+              <label for="price">Price</label>
+              <div id="priceError" class="negativeError text-danger"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input
+                  type="number"
+                  name="quantity"
+                  class="form-control"
+                  id="quantity"
+                  placeholder="Quantity"
+                required
+                  oninput="validateNumericInput(this, 'quantityError')"
+                />
+                <label for="quantity">Quantity</label>
+                <div id="quantityError" class="negativeError text-danger"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating mb-3">
+              <select
+                name="category"
+                class="form-select"
+                id="category"
+                aria-label="select category"
+              
+              >
+                <% categories.forEach(category => { %>
+                <option value="<%= category._id%>">
+                  <%= category.name %>
+                </option>
+                <% }); %>
+              </select>
+              <label for="category">Select Category</label>
+            </div>
+          </div>
+
+
+
+          <div class="col-lg-12">
+            <label for="inputImages" class="col-sm-10">Product Images</label>
+          </div>
+          <div class="col-lg-6">
+          
+            <input
+              accept="image/*"
+              class="form-control"
+              name="productImages"
+              id="inputImages1"
+              type="file"
+              onchange="displayImage(this, 'imagePreview1')"
+              required
+            />
+            <img id="imagePreview1" class="mt-2" style="max-width: 150px; max-height: 150px;" />
+            <button type="button" class="btn btn-sm btn-secondary m-2 " onclick="deleteImage('inputImages1', 'imagePreview1')">Delete</button>
+            </div>
+          <div class="col-lg-6">
+            <input
+              accept="image/*"
+              class="form-control"
+              name="productImages"
+              id="inputImages2"
+              type="file"
+              onchange="displayImage(this, 'imagePreview2')"
+              required
+            />
+            <img id="imagePreview2" class="mt-2" style="max-width: 150px; max-height: 150px;" />
+            <button type="button" class="btn btn-sm btn-secondary m-2 " onclick="deleteImage('inputImages2', 'imagePreview2')">Delete</button>
+          </div>
+          <div class="col-lg-6">
+            <input
+              accept="image/*"
+              class="form-control"
+              name="productImages"
+              id="inputImages3"
+              onchange="displayImage(this, 'imagePreview3')"
+              type="file"
+            />
+            <img id="imagePreview3" class="mt-2" style="max-width: 150px; max-height: 150px;" />
+            <button type="button" class="btn btn-sm btn-secondary m-2 " onclick="deleteImage('inputImages3', 'imagePreview3')">Delete</button>
+          </div>
+          <div class="col-lg-6">
+            <input
+              accept="image/*"
+              class="form-control"
+              name="productImages"
+              id="inputImages4"
+              onchange="displayImage(this, 'imagePreview4')"
+              type="file"
+            />
+            <img id="imagePreview4" class="mt-2" style="max-width: 150px; max-height: 150px;" />
+            <button type="button" class="btn btn-sm btn-secondary m-2 " onclick="deleteImage('inputImages4', 'imagePreview4')">Delete</button>
+          </div>         
+
+          <div class="col-12">
+            <div class="form-floating">
+              <textarea
+                class="form-control"
+                name="description"
+                placeholder="Address"
+                id="description"
+                style="height: 100px"
+                required
+              ></textarea>
+              <label for="description">Description</label>
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-warning">Submit</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<script>
+  function displayImage(input, imagePreviewId) {
+    const imagePreview = document.getElementById(imagePreviewId);
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        imagePreview.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.src = "";
+    }
+  }
+  function deleteImage(inputId, imagePreviewId) {
+    const input = document.getElementById(inputId);
+    const imagePreview = document.getElementById(imagePreviewId);
+
+    input.value = "";
+
+    imagePreview.src = "";
+  }
+
+  
+  function validateProductName(input) {
+    const productNameError = document.getElementById("productNameError");
+    const maxLength = 30; 
+
+    if (input.value.length > maxLength) {
+      productNameError.innerHTML = `Product name should not exceed ${maxLength} characters.`;
+    } else {
+      productNameError.innerHTML = "";
+    }
+  }
+
+
+function validateNumericInput(input, errorElement) {
+  const error = document.getElementById(errorElement);
+  const value = parseInt(input.value);
+
+  if (value <= 0 || isNaN(value)) {
+    error.innerHTML = "This field value must be a positive number.";
+  } else {
+    error.innerHTML = "";
+  }
+}
+  function validateForm() {
+   
+    return (
+      document.getElementById("productNameError").innerHTML === "" &&
+      document.getElementsByClassName("negativeError").innerHTML === ""
+     
+    );
+  }
+
+
+</script>
+<%- include('../adminLayout/footer.ejs') %>

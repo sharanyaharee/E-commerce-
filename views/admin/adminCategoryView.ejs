@@ -1,0 +1,86 @@
+<%- include('../adminLayout/header.ejs') %>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Categories</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/admin/adminDashboard">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Category List</li>
+      </ol>
+    </nav>
+    <div class="container d-flex justify-content-end mb-4">
+      <a href="/admin/adminAddCategory" class="btn btn-warning">Add Category</a>
+    </div>
+    
+  </div>
+  <!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table datatable table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">category Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (categories.length > 0) { %> <%
+                  categories.forEach(category => { %>
+                  <tr>
+                    <td><%= category._id %></td>
+                    <td><%= category.name%></td>
+                    <td>
+                      <img
+                        src="<%= category.image  %>"
+                        alt="<%= category.name %>"
+                        height="50"
+                      />
+                    </td>
+
+                    <td>
+                      <button
+                        id="toggleButton-<%=category._id %>"
+                        onclick="toggleBlock('/admin/toggleBlockCat/', '<%= category._id  %>')"
+                        class="btn btn-sm btn-secondary"
+                      >
+                        <% if (category.blocked) { %> UnListed <% } else { %>
+                        Listed <% } %>
+                      </button>
+                    </td>
+
+                    <td>
+                      <a
+                        href="/admin/editCategory/<%= category._id %>"
+                        class="btn btn-sm btn-warning"
+                      >
+                        Edit
+                      </a>
+                    </td>
+                  </tr>
+                  <% }) %> <% } else { %>
+                  <tr>
+                    <td colspan="3">No categories available.</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/js/toggleList.js"></script>
+<%- include('../adminLayout/footer.ejs') %>

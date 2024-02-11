@@ -1,0 +1,123 @@
+<html>
+  <%- include('../partials/header.ejs') %>
+
+  <body>
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="breadcrumb__links">
+              <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+              <span>Order Confirmed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <section class="shop-cart spad" style="padding-bottom: 0px">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8" style="margin-bottom: 58px">
+            <h3 style="color: rgb(6, 131, 16); text-align: center">
+              <b>Thank you , Your order has been confirmed!</b>
+            </h3>
+          </div>
+          <div class="col-lg-4 cart__btn">
+            <a href="/shop">Continue Shopping</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="shop__cart__table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.orderItems.forEach(item => { %>
+                  <tr>
+                    <td><span> <%= item.product.productName %> </span></td>
+                    <td><span>x <%= item.quantity %></span></td>
+                    <td><span>₹ <%= item.price * item.quantity %></span></td>
+                  </tr>
+                  <% }) %>
+
+                  <tr>
+                    <td colspan="2">Shipping Charge</td>
+                    <td><span>₹ <%= orders.shippingCharges %></span></td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="col" colspan="2">Total</th>
+                    <th scope="col">₹ <%=parseInt(orders.totalAmount) %></th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="checkout spad">
+      <div class="container">
+        <form action="#" class="checkout__form">
+          <div class="row">
+            <div class="col-lg-8 mx-auto">
+              <div class="checkout__order">
+                <h5 class="site-btn text-white">Order info</h5>
+                <div class="checkout__order__product">
+                  <ul>
+                    <li>
+                      Order Number
+                      <span><%=orders._id.toString().substr(0, 5) %></span>
+                    </li>
+                    <li>
+                      Date <span><%=orders.orderDate.toDateString()%></span>
+                    </li>
+                    <li>Total <span>₹ <%=orders.totalAmount%></span></li>
+                    <li>
+                      Payment Method<span> <%=orders.paymentMethod %></span>
+                    </li>
+                    <li>
+                      Delivery Status
+
+                      <span style="color: green"
+                        >Order Placed</span
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="checkout__order mt-3">
+                <h5 class="site-btn text-white">Shipping Address</h5>
+                <div class="checkout__order__product">
+              
+                  <ul>
+                    <li>Customer<span><%= orders.shippingInfo.address.name %></span></li>
+                    <li>Street<span><%= orders.shippingInfo.address.addressLine %></span></li>
+                    <li>City<span><%= orders.shippingInfo.address.city %></span></li>
+                    <li>PinCode<span><%= orders.shippingInfo.address.postCode %></span></li>
+                    <li>District<span><%= orders.shippingInfo.address.district %></span></li>
+                    <li>State<span><%= orders.shippingInfo.address.state %></span></li>
+                    <li>Country<span><%= orders.shippingInfo.address.country %></span></li>
+                  </ul>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>
