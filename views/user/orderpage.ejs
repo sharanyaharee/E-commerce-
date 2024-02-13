@@ -162,12 +162,10 @@
                      <% } else if(orders[i].orderItems[j].status ==="shipped") { %> 
                       <% if (orders[i].orderItems[j].status !== "user_cancelled" && orders[i].orderItems[j].status !=="admin_cancelled") { %>
                    
-                    <a
-                      href="/cancelOrder?orderId=<%= orders[i]._id %>&orderItemId=<%= orders[i].orderItems[j].product._id %>"
-                      class="btn btn-warning m-2"
-                    >
-                      Cancel
-                    </a>
+                    
+                    <a href="#" id="can" onclick="confirmCancelOrder('<%= orders[i]._id %>', '<%= orders[i].orderItems[j].product._id %>')"
+                       class="btn btn-warning m-2">Cancel</a>
+                    
                     <% } %> <% } else if(orders[i].orderItems[j].status ===
                     "delivered"){ %>
                     <a

@@ -133,6 +133,9 @@ const generateOTPExpiration = () => {
 };
 
 const sendOTPByEmail = async (email, otpData, req, res) => {
+  console.log(email)
+  console.log(adminMail)
+  console.log(FROM_MAIL)
   return new Promise((resolve, reject) => {
     try {
       const transporter = nodemailer.createTransport({
@@ -145,7 +148,7 @@ const sendOTPByEmail = async (email, otpData, req, res) => {
 
       const expirationTime = otpData.expiration.toLocaleString();
       const mailOptions = {
-        from: adminMail,
+        from: FROM_MAIL,
         to: email,
         subject: "Your OTP for Login",
         html: `<p>Hi, Your One Time Password to Login is ${otpData.otp}. This OTP is valid until ${expirationTime}</p>`,
