@@ -859,7 +859,7 @@ const orderData = async (req, res) => {
       totalPages: totalPages,
     };
 
-    res.render("user/orderPage", {
+    res.render("user/orderpage", {
       orders,
       pagination,
       session: req.session,
