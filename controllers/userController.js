@@ -12,7 +12,7 @@ const Banner = require("../models/bannerModel");
 const WalletTransaction = require("../models/walletModel");
 const bcrypt = require("bcrypt");
 const adminMail = process.env.ADMIN_MAIL;
-const PASS = process.env.pass;
+const PASS = process.env.PASS;
 const FROM_MAIL = process.env.FROM_MAIL;
 const nodemailer = require("nodemailer");
 const Cart = require("../models/cartModel");
@@ -135,20 +135,20 @@ const generateOTPExpiration = () => {
 const sendOTPByEmail = async (email, otpData, req, res) => {
   console.log(email)
   console.log(adminMail)
-  console.log(FROM_MAIL)
+  console.log(adminMail)
   return new Promise((resolve, reject) => {
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "sharanyaharee@gmail.com",
-          pass: "iplo gihq mfbm lsmx",
+          user: adminMail,
+          pass: PASS,
         },
       });
 
       const expirationTime = otpData.expiration.toLocaleString();
       const mailOptions = {
-        from:  adminMail,
+        from: adminMail,
         to: email,
         subject: "Your OTP for Login",
         html: `<p>Hi, Your One Time Password to Login is ${otpData.otp}. This OTP is valid until ${expirationTime}</p>`,
