@@ -145,7 +145,7 @@ const sendOTPByEmail = async (email, otpData, req, res) => {
 
       const expirationTime = otpData.expiration.toLocaleString();
       const mailOptions = {
-        from: email,
+        from: adminMail,
         to: email,
         subject: "Your OTP for Login",
         html: `<p>Hi, Your One Time Password to Login is ${otpData.otp}. This OTP is valid until ${expirationTime}</p>`,
