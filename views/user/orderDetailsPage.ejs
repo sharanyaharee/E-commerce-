@@ -61,14 +61,8 @@
               <tfoot>
                 <tr>
                   <th class="text-right" colspan="4">
-                    <% if(selectedProduct.status === "processing") { %>
-                      <a href="#" id="can" onclick="confirmCancelOrder('<%= id %>', '<%= productId %>')"
-                        class="btn btn-warning m-2">Cancel</a>
-                    <% } else if(selectedProduct.status=== "shipped") { %>
-                                       
-                    <a href="#" id="can" onclick="confirmCancelOrder('<%= id %>', '<%= productId %>')"
-                      class="btn btn-warning m-2">Cancel</a>
-                    <% } else if(selectedProduct.status === "delivered"){ %>
+                   
+                    <%  if(selectedProduct.status === "delivered"){ %>
                    
 
                     <button
