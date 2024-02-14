@@ -925,7 +925,7 @@ const total= req.session.userData.total
 
     if (order.paymentMethod === "COD") {
       orderItem.status = "user_cancelled";
-      order.statusDate = new Date();
+      orderItem.statusDate = new Date();
       await order.save();
 
       await Product.updateOne(
@@ -935,7 +935,7 @@ const total= req.session.userData.total
 
     } else {
       orderItem.status = "user_cancelled";
-      order.statusDate = new Date();
+      orderItem.statusDate = new Date();
       await order.save();
 
       await Product.updateOne(

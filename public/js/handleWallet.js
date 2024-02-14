@@ -56,7 +56,7 @@ function handleWalletPayment(data) {
                           confirmButtonColor: "#ffc107",
                           cancelButtonColor: "#6c757d",
                           confirmButtonText: "Yes, Proceed with RazorPay",
-                          cancelButtonText: "Proceed with COD",
+                         
                         }).then((paymentOptionResponse) => {
                           console.log(restAmount)
                           if (paymentOptionResponse.isConfirmed) {

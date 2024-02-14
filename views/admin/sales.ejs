@@ -63,20 +63,24 @@
               <tbody>
                 <% let orderCounter = 0; %>
                 <% orders.forEach((order) => {
-                  order.orderItems.forEach((item, index) => { %>
-                    <% orderCounter++; %>
-                    <tr>
-                      <th scope="row"><a href="#"><%= orderCounter %></a></th>
-                      <td><%= order.userId.username %></td>
-                      <td><a href="#" class="text-primary"><%= item.product.productName %></a></td>
-                      <td>₹<%= item.price %></td>
-                      <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
-                      <td><%= new Date(item.statusDate).toLocaleDateString() %></td>
-                      <td><%= item.quantity %></td>
-                
-                    </tr>
-                <% }); 
-                }); %>
+                  order.orderItems.forEach((item, index) => {
+                    if (item.statusDate) { 
+                      orderCounter++;
+                %>
+                      <tr>
+                        <th scope="row"><%= orderCounter %></th>
+                        <td><%= order.userId.username %></td>
+                        <td><%= item.product.productName %></td>
+                        <td>₹<%= item.price %></td>
+                        <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                        <td><%= new Date(item.statusDate).toLocaleDateString() %></td>
+                        <td><%= item.quantity %></td>
+                      </tr>
+                <% 
+                    }
+                  });
+                }); 
+                %>
               </tbody>
               
             </table>

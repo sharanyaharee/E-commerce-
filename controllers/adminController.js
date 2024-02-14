@@ -224,9 +224,7 @@ const filteredOrders = async (req, res) => {
 const salesReport = async (req, res) => {
   try {
     const orders = await Order.find({
-      orderItems: {
-        $elemMatch: { status: "delivered" },
-      },
+      "orderItems.status": "delivered"
     })
       .sort({ orderDate: -1 })
       .populate("userId")
